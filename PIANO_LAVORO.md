@@ -193,8 +193,8 @@ Consentire all'utente di scegliere, tramite interfaccia Streamlit, se:
 - [ ] (Opzionale) Rate limiting reale sulle API
 
 ### 2. Automazione e qualità
-- [ ] Aggiungere workflow CI/CD (GitHub Actions) per test automatici su push/pull request
-- [ ] Badge di stato build/test nel README
+- [x] Aggiungere workflow CI/CD (GitHub Actions) per test automatici su push/pull request
+- [x] Badge di stato build/test nel README
 - [ ] (Opzionale) Linting e formattazione automatica
 
 ### 3. Feature avanzate (opzionali)

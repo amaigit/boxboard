@@ -2,6 +2,8 @@
 
 ![Boxboard Logo](https://github.com/amaigit/boxboard/raw/main/assets/logo.png)
 
+[![Build Status](https://github.com/amaigit/boxboard/actions/workflows/ci.yml/badge.svg)](https://github.com/amaigit/boxboard/actions)
+
 **Boxboard** è un'applicazione web sviluppata con [Streamlit](https://streamlit.io/) per la gestione di oggetti e contenitori in scenari di svuotamento cantine, magazzini o archiviazione. Consente di tracciare oggetti, assegnare attività, gestire contenitori e visualizzare statistiche in tempo reale.
 
 🔗 **Demo online**: [boxboard.streamlit.app](https://boxboard.streamlit.app)
@@ -280,3 +282,8 @@ CORS abilitato per tutte le origini (in sviluppo). In produzione si consiglia di
 - Usa password robuste e aggiorna regolarmente le dipendenze.
 - Proteggi il file `.env` e non committare mai segreti o credenziali.
 - Consulta la sezione 'Roadmap avanzata' in [PIANO_LAVORO.md](./PIANO_LAVORO.md) per ulteriori best practice.
+
+## CI/CD
+
+- I test automatici vengono eseguiti su ogni push/pull request tramite GitHub Actions (workflow `ci.yml`).
+- Lo stato della build è visibile tramite badge in alto.
