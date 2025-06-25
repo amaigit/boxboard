@@ -5,9 +5,11 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
 ---
 
 ## Fase 1: Fondamenta e coerenza
-- [ ] **Separazione della configurazione**
-  - Creare un file `.env` o `config.py` per gestire i parametri di connessione (tipo di database, host, user, password, nome DB, ecc.).
-  - Modificare `app.py` per leggere la configurazione da questo file.
+- [x] **Separazione della configurazione**
+  - Creato file `.env.example` con i parametri di esempio per la connessione al database (il file `.env` reale va creato localmente e non va committato).
+  - Creato modulo `config.py` che carica le variabili dal file `.env` tramite python-dotenv.
+  - Aggiornato `requirements.txt` aggiungendo la dipendenza python-dotenv.
+  - Modificato `app.py` per usare la configurazione esterna invece dei parametri hardcoded.
 
 - [ ] **Astrazione del database**
   - Creare un modulo (es. `db.py`) che gestisca la connessione e le query in modo astratto, scegliendo il driver giusto in base al tipo di database.
