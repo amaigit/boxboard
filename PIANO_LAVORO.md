@@ -58,3 +58,23 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
 5. Documentazione aggiornata
 6. Dati di esempio e test
 7. Pulizia e ottimizzazione 
+
+---
+
+## Prossime feature pianificate
+
+### 1. Autenticazione e gestione utenti
+- Implementare login/logout e gestione sessioni utente
+- Gestione ruoli (admin, operatore, solo lettura, ecc.)
+- Interfaccia per creazione/modifica/cancellazione utenti (solo admin)
+- Possibilità di tracciare chi esegue le operazioni
+- (Opzionale) Integrazione con provider esterni (Google, LDAP, OAuth2)
+- Possibili strumenti: [streamlit-authenticator](https://github.com/mkhorasani/Streamlit-Authenticator), custom component
+
+### 2. API REST
+- Esporre le funzionalità CRUD tramite API RESTful (ad esempio con FastAPI o Flask)
+- Documentazione API (OpenAPI/Swagger)
+- Gestione autenticazione/permessi anche sulle API
+- Possibilità di filtrare, esportare, importare dati tramite API
+- Integrazione con altre app, automazioni, mobile, ecc.
+- Possibili strumenti: FastAPI, Flask, JWT per autenticazione 
