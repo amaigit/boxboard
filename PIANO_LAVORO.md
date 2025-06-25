@@ -129,7 +129,7 @@ Esporre tutte le funzionalità del sistema tramite API RESTful, in modo che ogni
 - [x] Endpoint per esportazione/importazione dati (CSV/JSON)
 - [x] Rate limiting, CORS, sicurezza
 - [x] Test automatici delle API
-- [ ] Aggiornamento documentazione
+- [x] Aggiornamento documentazione
 
 ### Modalità di lavoro
 - Ogni fase/milestone sarà committata separatamente

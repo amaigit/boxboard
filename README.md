@@ -214,3 +214,36 @@ Prossimi sviluppi:
 - Tutte le operazioni di creazione, modifica e cancellazione utenti vengono registrate in una tabella di log
 - I Coordinatori possono visualizzare il log delle ultime 100 operazioni dalla sidebar (voce "Log Operazioni")
 - Il log mostra: chi ha eseguito l'azione, tipo di operazione, entità coinvolta, dettagli e data/ora
+
+## API REST
+
+Le principali funzionalità CRUD sono esposte tramite FastAPI:
+- Autenticazione JWT (login)
+- CRUD utenti (solo admin)
+- CRUD location, oggetti, attività, note (lettura per tutti, modifica/cancellazione solo admin)
+- Log operazioni (solo admin)
+- Esportazione dati (CSV/JSON) per tutte le entità principali (solo admin)
+
+### Documentazione interattiva
+
+- OpenAPI/Swagger: `/docs`
+- Redoc: `/redoc`
+
+### Esempio di login e uso token
+
+1. POST `/login` con form-data `username` e `password` per ottenere il token JWT
+2. Usare il token come header `Authorization: Bearer <token>` per tutte le altre richieste
+
+### Esportazione dati
+
+- `/export/{entita}?formato=csv|json` (solo admin)
+- Entità supportate: utenti, locations, oggetti, attivita, note
+
+### CORS
+
+CORS abilitato per tutte le origini (in sviluppo). In produzione si consiglia di restringere.
+
+## Test automatici
+
+- Test CRUD di base sulle API REST: `pytest test_api.py`
+- Richiede dipendenze: `pytest`, `httpx`
