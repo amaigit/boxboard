@@ -12,8 +12,10 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
   - Modificato `app.py` per usare la configurazione esterna invece dei parametri hardcoded.
 
 - [ ] **Astrazione del database**
-  - Creare un modulo (es. `db.py`) che gestisca la connessione e le query in modo astratto, scegliendo il driver giusto in base al tipo di database.
-  - Opzionale: valutare l'uso di **SQLAlchemy** per semplificare la compatibilità tra DBMS.
+  - [x] Aggiunte dipendenze SQLAlchemy e driver per MariaDB/MySQL, PostgreSQL, SQLite in `requirements.txt`.
+  - [x] Creato modulo `db.py` che gestisce la connessione e la sessione SQLAlchemy in base al tipo di database scelto in configurazione.
+  - [ ] Definizione dei modelli ORM e refactoring delle query per usare SQLAlchemy.
+  - [ ] Test di connessione e compatibilità con tutti i DB supportati.
 
 - [ ] **Refactoring del codice**
   - Modificare tutte le funzioni di accesso al database in `app.py` per usare il nuovo modulo di astrazione.
