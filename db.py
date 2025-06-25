@@ -9,6 +9,7 @@ from sqlalchemy import (
     ForeignKey,
     Boolean,
     Date,
+    text,
 )
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 from datetime import datetime
@@ -29,7 +30,7 @@ try:
     engine = create_engine(DB_URL, echo=False, future=True)
     # Test connessione immediata
     with engine.connect() as conn:
-        conn.execute("SELECT 1")
+        conn.execute(text("SELECT 1"))
 except Exception as e:
     if getattr(config, "DB_FALLBACK_TO_SQLITE", False):
         print(f"[WARN] Connessione al DB fallita ({e}), passo a SQLite locale!")
@@ -50,7 +51,7 @@ def test_db_connection():
     try:
         Base.metadata.create_all(engine)
         with engine.connect() as conn:
-            conn.execute("SELECT 1")
+            conn.execute(text("SELECT 1"))
         print(f"Connessione e creazione tabelle riuscita su {config.DB_TYPE}!")
     except Exception as e:
         print(f"Errore di connessione o creazione tabelle: {e}")

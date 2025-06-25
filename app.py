@@ -15,6 +15,20 @@ from db import (
     LogOperazione,
     test_db_connection,
 )
+# --- CONTROLLO TABELLE E POPOLAMENTO AUTOMATICO ---
+try:
+    with get_session() as session:
+        utenti_count = session.query(Utente).count()
+    if utenti_count == 0:
+        test_db_connection()
+        from mock_data import popola_mock
+        popola_mock()
+except Exception:
+    # Se la tabella non esiste, crea tutto e popola
+    test_db_connection()
+    from mock_data import popola_mock
+    popola_mock()
+# --- FINE CONTROLLO ---
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import streamlit_authenticator as stauth
 import yaml
