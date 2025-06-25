@@ -68,7 +68,7 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
 - [x] Gestione ruoli (admin, operatore, solo lettura, ecc.)
 - [x] Interfaccia per creazione/modifica/cancellazione utenti (solo admin)
 - [x] Possibilità di tracciare chi esegue le operazioni
-- [ ] (Opzionale) Integrazione con provider esterni (Google, LDAP, OAuth2)
+- [x] Integrazione provider di autenticazione esterni (Google)
 - Possibili strumenti: [streamlit-authenticator](https://github.com/mkhorasani/Streamlit-Authenticator), custom component
 
 ### 2. API REST
@@ -91,7 +91,7 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
 ### 5. Feature avanzate
 - [x] Sincronizzazione automatica con gestione conflitti avanzata (browser/server)
 - [ ] Integrazione provider di autenticazione esterni (Google)
-- [ ] Aggiornamento documentazione (README, USER_GUIDE.md)
+- [x] Aggiornamento documentazione (README, USER_GUIDE.md)
 - [ ] Commit e push su GitHub ad ogni step
 
 ---
@@ -229,7 +229,7 @@ Permettere all'utente di sincronizzare i dati tra modalità browser (IndexedDB/D
 
 ### 3. Feature avanzate (opzionali)
 - [x] Sincronizzazione dati browser/server (manuale o automatica)
-- [ ] Provider di autenticazione esterni (Google, LDAP, ecc.)
+- [x] Provider di autenticazione esterni (Google, LDAP, ecc.)
 - [ ] Dashboard avanzata, filtri, ricerca full-text
 - [ ] Notifiche, log avanzato, audit trail
 
@@ -246,8 +246,8 @@ Permettere all'utente di sincronizzare i dati tra modalità browser (IndexedDB/D
 
 ### 6. Feature avanzate
 - [x] Sincronizzazione automatica con gestione conflitti avanzata (browser/server)
-- [ ] Integrazione provider di autenticazione esterni (Google)
-- [ ] Aggiornamento documentazione (README, USER_GUIDE.md)
+- [x] Integrazione provider di autenticazione esterni (Google)
+- [x] Aggiornamento documentazione (README, USER_GUIDE.md)
 - [ ] Commit e push su GitHub ad ogni step
 
 --- 

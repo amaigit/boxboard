@@ -12,6 +12,7 @@ Benvenuto in **BoxBoard**, la soluzione open source per la gestione di oggetti, 
 - [Gestione Oggetti, Attività, Note](#gestione-oggetti-attività-note)
 - [Modalità Server e Browser](#modalità-server-e-browser)
 - [Sincronizzazione dati](#sincronizzazione-dati)
+- [Login con Google (OAuth2)](#login-con-google-oauth2)
 - [FAQ](#faq)
 - [Troubleshooting](#troubleshooting)
 
@@ -94,6 +95,26 @@ Naviga tra le sezioni dal menu laterale: Utenti, Location, Oggetti, Attività, N
 - **Manuale**: esporta dati in JSON e importa su server/browser tramite pulsanti dedicati
 - **Automatica**: in modalità browser, la sincronizzazione avviene anche in automatico quando torni online (se configurato)
 - **Attenzione**: in caso di conflitti, l'ultimo import prevale
+
+---
+
+## Login con Google (OAuth2)
+
+Oltre al login classico, puoi autenticarti con il tuo account Google:
+
+1. Crea un progetto su Google Cloud Console e ottieni le credenziali OAuth2
+2. Imposta le variabili `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET` nel file `.env`
+3. All'avvio scegli "Login con Google" nella sidebar
+4. Se l'email non esiste nel database, viene creato un nuovo utente "Operatore" automaticamente
+5. Puoi sempre usare anche il login classico
+
+**Sicurezza:**
+- Le credenziali Google NON vanno mai committate nel repo
+- Puoi limitare l'accesso a specifici domini email modificando la logica in `app.py`
+
+**FAQ**
+- *Non vedo il pulsante Google?* Verifica che le variabili siano impostate e la libreria installata
+- *Errore di redirect?* Controlla che l'URI sia autorizzato su Google Cloud
 
 ---
 

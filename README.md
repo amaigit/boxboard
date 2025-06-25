@@ -363,3 +363,39 @@ Per abilitare la modalità solo-browser:
 4. Consulta i commenti nel file JS per dettagli su CRUD, esportazione/importazione e sincronizzazione manuale.
 
 **Nota:** Nessuna installazione o build è richiesta su questo sistema. Testa la logica in ambiente browser reale.
+
+## Login con Google (OAuth2)
+
+BoxBoard supporta l'autenticazione tramite Google (OAuth2) oltre al login classico.
+
+### Prerequisiti
+- Crea un progetto su [Google Cloud Console](https://console.cloud.google.com/)
+- Abilita l'API OAuth2 e crea credenziali OAuth2 (tipo: Web application)
+- Imposta l'URI di redirect su `http://localhost:8501` (o l'URL della tua app)
+- Ottieni `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET`
+
+### Configurazione
+Aggiungi queste variabili al tuo `.env`:
+```
+GOOGLE_CLIENT_ID=... (dal Google Cloud)
+GOOGLE_CLIENT_SECRET=... (dal Google Cloud)
+```
+
+### Flusso di login
+- All'avvio scegli "Login con Google" nella sidebar
+- Dopo l'autenticazione, se l'email non esiste nel database, viene creato un nuovo utente con ruolo "Operatore"
+- Se l'utente esiste, viene effettuato il login diretto
+- Puoi sempre usare anche il login classico (username/password)
+
+### Sicurezza e note
+- Puoi limitare l'accesso a specifici domini email (modifica la logica in `app.py` se necessario)
+- Le credenziali Google NON vanno mai committate nel repo
+- In produzione, imposta i redirect URI corretti su Google Cloud
+
+### Troubleshooting
+- Se il login Google non funziona, verifica:
+  - Che le variabili d'ambiente siano corrette
+  - Che l'URI di redirect sia autorizzato su Google Cloud
+  - Che la libreria `streamlit-oauth-client` sia installata
+
+Per dettagli vedi anche la [guida rapida utente](./USER_GUIDE.md#login-con-google-oauth2).
