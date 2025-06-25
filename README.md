@@ -194,3 +194,17 @@ Prossimi sviluppi:
 - Gestione ruoli (admin, operatore, solo lettura)
 - Interfaccia per gestione utenti
 - Integrazione provider esterni (Google, LDAP, ecc.)
+
+## Gestione ruoli
+
+- Ogni utente ha un ruolo: **Operatore**, **Coordinatore** (admin), **Altro**
+- Solo i Coordinatori possono aggiungere, modificare o cancellare utenti
+- Gli altri ruoli possono solo visualizzare la lista utenti
+
+## Interfaccia gestione utenti
+
+- Sezione dedicata nella sidebar
+- Visualizzazione tabellare di tutti gli utenti
+- Form per aggiungere nuovo utente (solo Coordinatore)
+- Modifica/cancellazione utenti esistenti (solo Coordinatore)
+- Un Coordinatore non può eliminare se stesso

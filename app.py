@@ -84,36 +84,57 @@ def get_oggetti_in_contenitore(contenitore_id):
 
 # === INTERFACCIA UTENTE ===
 
-def show_utenti():
-    """Sezione gestione utenti"""
+def show_utenti(current_user):
+    """Sezione gestione utenti con controllo ruoli"""
     st.header("👥 Gestione Utenti")
-    
-    # Visualizzazione utenti esistenti
     utenti = get_utenti()
     if utenti:
-        df = pd.DataFrame(utenti)
+        df = pd.DataFrame([{ 'id': u.id, 'nome': u.nome, 'ruolo': u.ruolo, 'email': u.email } for u in utenti])
         st.subheader("Utenti Registrati")
         st.dataframe(df, use_container_width=True)
     
-    # Form per nuovo utente
-    st.subheader("Aggiungi Nuovo Utente")
-    with st.form("nuovo_utente"):
-        col1, col2 = st.columns(2)
-        with col1:
-            nome = st.text_input("Nome*")
-            ruolo = st.selectbox("Ruolo", ["Operatore", "Coordinatore", "Altro"])
-        with col2:
-            email = st.text_input("Email")
-        
-        if st.form_submit_button("Aggiungi Utente"):
-            if nome:
-                query = "INSERT INTO utenti (nome, ruolo, email) VALUES (%s, %s, %s)"
-                result = execute_query(query, (nome, ruolo, email if email else None))
-                if result:
+    # Solo admin (Coordinatore) può aggiungere/modificare/cancellare
+    if current_user and current_user.ruolo == 'Coordinatore':
+        st.subheader("Aggiungi Nuovo Utente")
+        with st.form("nuovo_utente"):
+            col1, col2 = st.columns(2)
+            with col1:
+                nome = st.text_input("Nome*")
+                ruolo = st.selectbox("Ruolo", ["Operatore", "Coordinatore", "Altro"])
+            with col2:
+                email = st.text_input("Email")
+            if st.form_submit_button("Aggiungi Utente"):
+                if nome:
+                    add_utente(nome, ruolo, email if email else None)
                     st.success(f"Utente '{nome}' aggiunto con successo!")
                     st.rerun()
-            else:
-                st.error("Il nome è obbligatorio!")
+                else:
+                    st.error("Il nome è obbligatorio!")
+        st.subheader("Modifica/Cancella Utente")
+        utente_ids = [u.id for u in utenti]
+        utente_nomi = [f"{u.nome} ({u.email})" for u in utenti]
+        selected_idx = st.selectbox("Seleziona utente", range(len(utenti)), format_func=lambda x: utente_nomi[x])
+        utente_sel = utenti[selected_idx]
+        with st.form("modifica_utente"):
+            col1, col2 = st.columns(2)
+            with col1:
+                nuovo_nome = st.text_input("Nome", value=utente_sel.nome)
+                nuovo_ruolo = st.selectbox("Ruolo", ["Operatore", "Coordinatore", "Altro"], index=["Operatore", "Coordinatore", "Altro"].index(utente_sel.ruolo))
+            with col2:
+                nuova_email = st.text_input("Email", value=utente_sel.email)
+            if st.form_submit_button("Salva Modifiche"):
+                update_utente(utente_sel.id, nome=nuovo_nome, ruolo=nuovo_ruolo, email=nuova_email)
+                st.success("Utente aggiornato!")
+                st.rerun()
+            if st.form_submit_button("Elimina Utente"):
+                if utente_sel.id == current_user.id:
+                    st.error("Non puoi eliminare te stesso!")
+                else:
+                    delete_utente(utente_sel.id)
+                    st.success("Utente eliminato!")
+                    st.rerun()
+    else:
+        st.info("Solo i Coordinatori possono modificare o cancellare utenti.")
 
 def show_locations():
     """Sezione gestione location"""
@@ -1016,7 +1037,6 @@ def main():
 def get_users_for_auth():
     """Recupera utenti dal DB e li formatta per streamlit-authenticator"""
     utenti = get_utenti()
-    # username = email, name = nome, password = hash
     users = {
         "usernames": {}
     }
@@ -1024,7 +1044,8 @@ def get_users_for_auth():
         users["usernames"][u.email] = {
             "name": u.nome,
             "password": u.password if hasattr(u, 'password') and u.password else hashlib.sha256(u.email.encode()).hexdigest(),
-            "email": u.email
+            "email": u.email,
+            "ruolo": u.ruolo
         }
     return users
 
@@ -1047,8 +1068,47 @@ if authentication_status is None:
 if authentication_status:
     authenticator.logout("Logout", "sidebar")
     st.sidebar.success(f"Autenticato come {name}")
+    # Recupero utente corrente dal DB
+    current_user = None
+    for u in get_utenti():
+        if u.email == username:
+            current_user = u
+            break
     # --- qui va il resto dell'app ---
-    main()
+    def main_router():
+        menu_options = {
+            "🏠 Dashboard": "dashboard",
+            "👥 Utenti": "utenti", 
+            "📍 Location": "locations",
+            "📦 Oggetti": "oggetti",
+            "⚡ Attività": "attivita",
+            "📝 Note": "note",
+            "📈 Statistiche": "statistiche"
+        }
+        selected = st.sidebar.selectbox(
+            "🧭 Navigazione",
+            options=list(menu_options.keys()),
+            index=0
+        )
+        page = menu_options[selected]
+        if page == "utenti":
+            show_utenti(current_user)
+        elif page == "dashboard":
+            show_dashboard()
+        elif page == "locations":
+            show_locations()
+        elif page == "oggetti":
+            show_oggetti()
+        elif page == "attivita":
+            show_attivita()
+        elif page == "note":
+            show_note()
+        elif page == "statistiche":
+            show_statistiche()
+        st.sidebar.markdown("---")
+        st.sidebar.markdown("**Sistema Svuotacantine v1.0**")
+        st.sidebar.markdown("Gestione completa inventario")
+    main_router()
 
 if __name__ == "__main__":
     main()

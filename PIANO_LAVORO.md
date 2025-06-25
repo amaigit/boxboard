@@ -65,8 +65,8 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
 
 ### 1. Autenticazione e gestione utenti
 - [x] Iniziata integrazione di streamlit-authenticator per login/logout e sessione utente
-- [ ] Gestione ruoli (admin, operatore, solo lettura, ecc.)
-- [ ] Interfaccia per creazione/modifica/cancellazione utenti (solo admin)
+- [x] Gestione ruoli (admin, operatore, solo lettura, ecc.)
+- [x] Interfaccia per creazione/modifica/cancellazione utenti (solo admin)
 - [ ] Possibilità di tracciare chi esegue le operazioni
 - [ ] (Opzionale) Integrazione con provider esterni (Google, LDAP, OAuth2)
 - Possibili strumenti: [streamlit-authenticator](https://github.com/mkhorasani/Streamlit-Authenticator), custom component
