@@ -125,7 +125,7 @@ Esporre tutte le funzionalità del sistema tramite API RESTful, in modo che ogni
 - [ ] Permessi: tutti possono leggere, solo admin può modificare/cancellare
 
 #### Fase 7: Log operazioni
-- [ ] Endpoint per consultare il log delle operazioni (solo admin)
+- [x] Endpoint per consultare il log delle operazioni (solo admin)
 
 #### Fase 8: Extra e ottimizzazioni
 - [ ] Endpoint per esportazione/importazione dati (CSV/JSON)

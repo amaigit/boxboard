@@ -5,7 +5,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from typing import Optional
-from db import get_session, Utente, Location, Oggetto, Attivita, Nota
+from db import get_session, Utente, Location, Oggetto, Attivita, Nota, LogOperazione
 import os
 
 # --- CONFIG ---
@@ -150,6 +150,17 @@ class NotaUpdate(BaseModel):
     location_id: Optional[int] = None
     autore_id: Optional[int] = None
     data: Optional[datetime] = None
+
+class LogOperazioneOut(BaseModel):
+    id: int
+    utente_id: int
+    azione: str
+    entita: str
+    entita_id: Optional[int] = None
+    dettagli: Optional[str] = None
+    timestamp: datetime
+    class Config:
+        orm_mode = True
 
 # --- UTILITY JWT ---
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -527,6 +538,13 @@ def delete_nota(nota_id: int, admin: Utente = Depends(require_admin)):
         session.delete(n)
         session.commit()
         return {"detail": "Nota eliminata"}
+
+# --- ENDPOINT LOG OPERAZIONI (SOLO ADMIN) ---
+@app.get("/log-operazioni", response_model=list[LogOperazioneOut], tags=["Log"])
+def list_log_operazioni(admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        logs = session.query(LogOperazione).order_by(LogOperazione.timestamp.desc()).all()
+        return logs
 
 if __name__ == "__main__":
     import uvicorn
