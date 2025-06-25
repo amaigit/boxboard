@@ -1,0 +1,59 @@
+---
+VERSIONE 1: MASSIMA LIBERTÀ
+
+"Svuotacantine" è un sistema gestionale per squadre di lavoro che si occupano di svuotamento locali, traslochi, sgomberi o gestione di magazzini. L'applicazione serve a:
+- Gestire un inventario di oggetti suddivisi per location (es. stanze, magazzini, appartamenti)
+- Organizzare attività e assegnare oggetti alle attività
+- Gestire utenti con diversi ruoli (es. Operatore, Coordinatore)
+- Tenere traccia delle operazioni svolte e delle note
+- Fornire statistiche e log delle azioni
+
+Crea una applicazione web per la gestione di un inventario e delle attività di una squadra di lavoro, ispirata al sistema "Svuotacantine". L'applicazione deve permettere:
+- Autenticazione utenti (login classico e Google)
+- Gestione utenti, location, oggetti, attività, note
+- Statistiche e log operazioni
+- Interfaccia moderna e semplice
+
+Scegli liberamente tecnologie, linguaggi e modalità di persistenza dati. Puoi proporre miglioramenti o semplificazioni.
+
+---
+VERSIONE 2: GUIDA MODERATA
+
+"Svuotacantine" è un gestionale per squadre che si occupano di svuotamento locali, traslochi, sgomberi o gestione magazzini. Permette di:
+- Gestire oggetti e location
+- Organizzare attività e assegnare oggetti
+- Gestire utenti e ruoli
+- Annotare note e visualizzare statistiche/log
+
+Crea una web app per la gestione di inventario e attività di una squadra, simile a "Svuotacantine". Deve includere:
+1. Login classico e Google OAuth2
+2. Ruoli utenti (Operatore, Coordinatore)
+3. CRUD per utenti, location, oggetti, attività, note
+4. Statistiche riepilogative
+5. Log delle operazioni (solo per Coordinatori)
+6. Menu di navigazione laterale
+
+Puoi usare qualsiasi stack moderno (es. Python+Streamlit, Django, Node.js+React, ecc.). Scegli tu la soluzione dati. L'interfaccia deve essere user-friendly e responsive.
+
+---
+VERSIONE 3: ISTRUZIONI DETTAGLIATE
+
+"Svuotacantine" è un'applicazione gestionale per squadre di lavoro che si occupano di svuotamento locali, traslochi, sgomberi o gestione di magazzini. Le sue funzionalità principali sono:
+- Gestione di un inventario di oggetti, suddivisi per location
+- Organizzazione di attività e assegnazione oggetti alle attività
+- Gestione utenti con ruoli (Operatore, Coordinatore)
+- Note, statistiche e log delle operazioni
+
+Crea un'applicazione web con queste specifiche:
+- Autenticazione: login classico (username/password) e Google OAuth2
+- Gestione ruoli: Operatore e Coordinatore
+- Gestione utenti: elenco, aggiunta, modifica, cancellazione (solo Coordinatore)
+- Gestione location: elenco, aggiunta, modifica, cancellazione
+- Gestione oggetti: elenco, aggiunta, modifica, cancellazione, ogni oggetto associato a una location
+- Gestione attività: elenco, aggiunta, modifica, cancellazione, assegnazione oggetti alle attività
+- Gestione note: aggiunta note collegate a oggetti, attività o location
+- Statistiche: visualizzazione riepilogo (es. numero oggetti, attività, utenti)
+- Log operazioni: visualizzazione log delle azioni utenti (solo Coordinatore)
+- Navigazione: menu laterale, interfaccia moderna e responsive
+
+Tecnologie: puoi scegliere liberamente stack e database. L'app deve essere completa, usabile e pronta all'uso. Includi autenticazione, gestione dati, UI e tutte le funzionalità richieste. 
