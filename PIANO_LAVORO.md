@@ -176,11 +176,10 @@ Consentire all'utente di scegliere, tramite interfaccia Streamlit, se:
 - L'implementazione richiede competenze sia Python/Streamlit che JavaScript/WebAssembly.
 
 - [x] Progettazione UX pannello di scelta modalità (Streamlit)
-- [ ] Implementazione Streamlit Component custom per CRUD locale con Dexie.js *(IN CORSO)*
-  - [ ] Struttura base componente custom (frontend JS + backend Python)
-  - [ ] Integrazione condizionale in Streamlit (solo modalità browser)
-  - [ ] CRUD locale per tutte le entità principali
-  - [ ] Esportazione/importazione dati (JSON)
-  - [ ] Test cross-browser e documentazione
+- [x] Struttura base componente custom (frontend JS + backend Python)
+- [x] Integrazione condizionale in Streamlit (solo modalità browser)
+- [ ] CRUD locale per tutte le entità principali
+- [ ] Esportazione/importazione dati (JSON)
+- [ ] Test cross-browser e documentazione
 
 --- 

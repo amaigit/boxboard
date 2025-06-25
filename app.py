@@ -12,6 +12,7 @@ import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
 import hashlib
+from streamlit_components.crud_browser import st_crud_browser
 
 # Configurazione della pagina
 st.set_page_config(
@@ -1168,6 +1169,11 @@ def pannello_scelta_modalita():
 
 # Chiamata al pannello (da inserire all'avvio app)
 pannello_scelta_modalita()
+
+# Dopo la scelta modalità, mostra il componente solo se browser
+if st.session_state.get("modalita_db") == "browser":
+    st.header("Gestione dati locale (modalità browser)")
+    st_crud_browser()
 
 if __name__ == "__main__":
     main()
