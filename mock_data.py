@@ -1,4 +1,5 @@
 from crud import add_utente, add_location, add_oggetto, add_attivita, add_oggetto_attivita, add_nota
+from datetime import datetime
 
 # Rimuovo 'from app import (' se non usato
 
@@ -64,11 +65,11 @@ def popola_mock():
     )
 
     # Assegnazioni attività
-    add_oggetto_attivita(o1, a1, "2024-07-01", u1)
-    add_oggetto_attivita(o1, a3, "2024-06-15", u2)
-    add_oggetto_attivita(o3, a2, "2024-07-10", u1)
-    add_oggetto_attivita(o6, a1, "2024-07-05", u3)
-    add_oggetto_attivita(o8, a4, "2024-06-20", u2)
+    add_oggetto_attivita(o1, a1, datetime.strptime("2024-07-01", "%Y-%m-%d").date(), u1)
+    add_oggetto_attivita(o1, a3, datetime.strptime("2024-06-15", "%Y-%m-%d").date(), u2)
+    add_oggetto_attivita(o3, a2, datetime.strptime("2024-07-10", "%Y-%m-%d").date(), u1)
+    add_oggetto_attivita(o6, a1, datetime.strptime("2024-07-05", "%Y-%m-%d").date(), u3)
+    add_oggetto_attivita(o8, a4, datetime.strptime("2024-06-20", "%Y-%m-%d").date(), u2)
 
     # Note
     add_nota(
