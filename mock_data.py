@@ -1,3 +1,5 @@
+from app import add_utente, add_location, add_oggetto, add_attivita, add_oggetto_attivita, add_nota
+
 # Rimuovo 'from app import (' se non usato
 
 
