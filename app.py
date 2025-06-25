@@ -8,6 +8,10 @@ import config
 warnings.filterwarnings('ignore')
 from db import get_session, Utente, Location, Oggetto, Attivita, OggettoAttivita, Nota
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+import streamlit_authenticator as stauth
+import yaml
+from yaml.loader import SafeLoader
+import hashlib
 
 # Configurazione della pagina
 st.set_page_config(
@@ -1007,6 +1011,44 @@ def main():
     st.sidebar.markdown("---")
     st.sidebar.markdown("**Sistema Svuotacantine v1.0**")
     st.sidebar.markdown("Gestione completa inventario")
+
+# --- AUTENTICAZIONE ---
+def get_users_for_auth():
+    """Recupera utenti dal DB e li formatta per streamlit-authenticator"""
+    utenti = get_utenti()
+    # username = email, name = nome, password = hash
+    users = {
+        "usernames": {}
+    }
+    for u in utenti:
+        users["usernames"][u.email] = {
+            "name": u.nome,
+            "password": u.password if hasattr(u, 'password') and u.password else hashlib.sha256(u.email.encode()).hexdigest(),
+            "email": u.email
+        }
+    return users
+
+users = get_users_for_auth()
+
+# Configurazione autenticazione (può essere estesa per ruoli, ecc.)
+authenticator = stauth.Authenticate(
+    users,
+    "boxboard_cookie",
+    "boxboard_auth_key",
+    cookie_expiry_days=7
+)
+
+name, authentication_status, username = authenticator.login("Login", "main")
+
+if authentication_status is False:
+    st.error("Username o password errati")
+if authentication_status is None:
+    st.warning("Inserisci username e password")
+if authentication_status:
+    authenticator.logout("Logout", "sidebar")
+    st.sidebar.success(f"Autenticato come {name}")
+    # --- qui va il resto dell'app ---
+    main()
 
 if __name__ == "__main__":
     main()

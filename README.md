@@ -180,3 +180,17 @@ DB_PASSWORD=supersegreta
   - Che il firewall non blocchi la porta
   - Che l'utente abbia i permessi di accesso da remoto
   - Che i parametri in `.env` siano corretti
+
+## Autenticazione e gestione utenti
+
+L'app ora richiede autenticazione tramite [streamlit-authenticator](https://github.com/mkhorasani/Streamlit-Authenticator):
+- All'avvio viene richiesto login (username = email, password = hash/email se non presente)
+- Logout disponibile nella sidebar
+- Solo utenti autenticati possono accedere alle funzionalità
+- Gli utenti sono letti dalla tabella `utenti` del database
+- Per ora la gestione utenti (creazione/modifica/cancellazione) va fatta direttamente sul database
+
+Prossimi sviluppi:
+- Gestione ruoli (admin, operatore, solo lettura)
+- Interfaccia per gestione utenti
+- Integrazione provider esterni (Google, LDAP, ecc.)
