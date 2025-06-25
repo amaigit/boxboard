@@ -178,8 +178,8 @@ Consentire all'utente di scegliere, tramite interfaccia Streamlit, se:
 - [x] Progettazione UX pannello di scelta modalità (Streamlit)
 - [x] Struttura base componente custom (frontend JS + backend Python)
 - [x] Integrazione condizionale in Streamlit (solo modalità browser)
-- [ ] CRUD locale per tutte le entità principali
-- [ ] Esportazione/importazione dati (JSON)
-- [ ] Test cross-browser e documentazione
+- [x] CRUD locale per tutte le entità principali
+- [x] Esportazione/importazione dati (JSON)
+- [x] Test cross-browser e documentazione
 
 --- 

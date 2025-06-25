@@ -10,7 +10,16 @@ def st_crud_browser(key=None):
     components.html("""
     <div style='padding:1em; border:1px dashed #888; background:#f9f9f9;'>
         <b>CRUD locale (browser):</b><br>
-        Qui verrà integrata l'interfaccia CRUD con Dexie.js.<br>
-        <i>Questa è una preview tecnica. La logica JS sarà integrata in seguito.</i>
+        <ul>
+            <li><b>Utenti</b>: aggiungi, modifica, elimina utenti locali</li>
+            <li><b>Locations</b>: gestione sedi/località</li>
+            <li><b>Oggetti</b>: gestione oggetti e contenitori</li>
+            <li><b>Attività</b>: gestione attività e assegnazioni</li>
+            <li><b>Note</b>: aggiungi note agli oggetti/attività/locations</li>
+        </ul>
+        <button disabled style='margin:0.5em;'>Esporta dati (JSON)</button>
+        <button disabled style='margin:0.5em;'>Importa dati (JSON)</button>
+        <br><i>Qui saranno attivi i pulsanti per esportare/importare tutti i dati in formato JSON.<br>
+        Questa è una preview tecnica: la logica JS sarà integrata in seguito.</i>
     </div>
-    """, height=120, key=key) 
+    """, height=320, key=key) 
