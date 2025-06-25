@@ -1,12 +1,14 @@
-from fastapi import FastAPI, Depends, HTTPException, status, Body
+from fastapi import FastAPI, Depends, HTTPException, status, Body, Query
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from typing import Optional
 from db import get_session, Utente, Location, Oggetto, Attivita, Nota, LogOperazione
 import os
+import csv
+import io
 
 # --- CONFIG ---
 SECRET_KEY = os.environ.get("API_SECRET_KEY", "supersecretkey")
@@ -545,6 +547,42 @@ def list_log_operazioni(admin: Utente = Depends(require_admin)):
     with get_session() as session:
         logs = session.query(LogOperazione).order_by(LogOperazione.timestamp.desc()).all()
         return logs
+
+# --- ENDPOINT EXPORT DATI (SOLO ADMIN) ---
+def to_csv(rows, columns):
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(columns)
+    for row in rows:
+        writer.writerow([getattr(row, col) for col in columns])
+    output.seek(0)
+    return output
+
+@app.get("/export/{entita}", tags=["Export"])
+def export_data(entita: str, formato: str = Query("json", enum=["json", "csv"]), admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        if entita == "utenti":
+            data = session.query(Utente).all()
+            columns = ["id", "nome", "email", "ruolo"]
+        elif entita == "locations":
+            data = session.query(Location).all()
+            columns = ["id", "nome", "indirizzo", "note", "data_creazione"]
+        elif entita == "oggetti":
+            data = session.query(Oggetto).all()
+            columns = ["id", "nome", "descrizione", "stato", "tipo", "location_id", "contenitore_id", "data_rilevamento"]
+        elif entita == "attivita":
+            data = session.query(Attivita).all()
+            columns = ["id", "nome", "descrizione"]
+        elif entita == "note":
+            data = session.query(Nota).all()
+            columns = ["id", "testo", "oggetto_id", "attivita_id", "location_id", "autore_id", "data"]
+        else:
+            raise HTTPException(400, "Entità non supportata")
+        if formato == "json":
+            return [{{col: getattr(row, col) for col in columns}} for row in data]
+        elif formato == "csv":
+            output = to_csv(data, columns)
+            return StreamingResponse(iter([output.getvalue()]), media_type="text/csv", headers={"Content-Disposition": f"attachment; filename={entita}.csv"})
 
 if __name__ == "__main__":
     import uvicorn

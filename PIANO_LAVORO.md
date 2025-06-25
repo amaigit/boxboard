@@ -126,7 +126,7 @@ Esporre tutte le funzionalità del sistema tramite API RESTful, in modo che ogni
 - [x] Endpoint per consultare il log delle operazioni (solo admin)
 
 #### Fase 8: Extra e ottimizzazioni
-- [ ] Endpoint per esportazione/importazione dati (CSV/JSON)
+- [x] Endpoint per esportazione/importazione dati (CSV/JSON)
 - [ ] Rate limiting, CORS, sicurezza
 - [ ] Test automatici delle API
 - [ ] Aggiornamento documentazione
