@@ -98,7 +98,7 @@ Esporre tutte le funzionalità del sistema tramite API RESTful, in modo che ogni
 - [x] Endpoint di healthcheck (`/health`)
 - [x] Endpoint di autenticazione (login, refresh token)
 - [x] Gestione JWT e permessi per ruoli (Operatore, Coordinatore, Altro)
-- [ ] Documentazione OpenAPI automatica
+- [x] Documentazione OpenAPI automatica
 
 #### Fase 2: Utenti
 - [x] Endpoint CRUD utenti (solo admin può creare/modificare/cancellare)
