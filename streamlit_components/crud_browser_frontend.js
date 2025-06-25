@@ -209,3 +209,45 @@ async function editOggetto(id) {
 // 2. Chiama renderOggettiTable('oggettiCrudContainer') dopo il caricamento pagina
 // 3. Adatta per altre entità copiando la logica
 // ... existing code ... 
+
+// --- NOTIFICHE AVANZATE E STORICO OPERAZIONI ---
+
+// Toast non bloccante
+function showToast(msg, type='info') {
+    const color = type==='success' ? '#4caf50' : type==='error' ? '#f44336' : '#333';
+    const toast = document.createElement('div');
+    toast.textContent = msg;
+    toast.style = `position:fixed;bottom:30px;right:30px;background:${color};color:#fff;padding:12px 24px;border-radius:6px;z-index:9999;font-size:1.1em;opacity:0.95;box-shadow:0 2px 8px #0003;`;
+    document.body.appendChild(toast);
+    setTimeout(()=>toast.remove(), 3500);
+}
+
+// Badge stato online/offline
+function renderOnlineBadge(containerId) {
+    const online = navigator.onLine;
+    const html = `<span style='padding:4px 12px;border-radius:12px;background:${online?'#4caf50':'#f44336'};color:#fff;'>${online?'ONLINE':'OFFLINE'}</span>`;
+    document.getElementById(containerId).innerHTML = html;
+}
+window.addEventListener('online', ()=>renderOnlineBadge('badgeOnline'));
+window.addEventListener('offline', ()=>renderOnlineBadge('badgeOnline'));
+
+// Storico operazioni (in memoria, max 50)
+const storicoOperazioni = [];
+function logOperazione(msg, type='info') {
+    storicoOperazioni.unshift({msg, type, ts: new Date().toLocaleString()});
+    if (storicoOperazioni.length>50) storicoOperazioni.pop();
+    renderStorico('storicoContainer');
+}
+function renderStorico(containerId) {
+    if (!document.getElementById(containerId)) return;
+    let html = '<b>Storico operazioni</b><ul style="max-height:200px;overflow:auto;font-size:0.95em">';
+    for (const op of storicoOperazioni) {
+        html += `<li style='color:${op.type==='error'?'#f44336':op.type==='success'?'#4caf50':'#333'}'>[${op.ts}] ${op.msg}</li>`;
+    }
+    html += '</ul>';
+    document.getElementById(containerId).innerHTML = html;
+}
+
+// Esempio: usa showToast/logOperazione nelle funzioni CRUD/sync
+// Sostituisci alert(...) con showToast(...) e logOperazione(...)
+// ... existing code ... 
