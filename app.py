@@ -481,6 +481,14 @@ def show_dashboard():
     
     st.divider()
     
+    # --- FILTRI AVANZATI ---
+    with st.expander("🔎 Filtri avanzati attività per utente", expanded=True):
+        utenti_lista = execute_query("SELECT nome FROM utenti", fetch=True)
+        utenti_nomi = [u['nome'] for u in utenti_lista] if utenti_lista else []
+        utenti_sel = st.multiselect("Filtra per utente", utenti_nomi)
+        stato_sel = st.multiselect("Stato attività", ["completate", "in_corso"])
+        search_txt = st.text_input("Ricerca full-text (nome utente, attività)")
+
     # Attività per utente
     st.subheader("📋 Attività per Utente")
     query = """
@@ -494,9 +502,19 @@ def show_dashboard():
     ORDER BY totale_attivita DESC
     """
     attivita_utenti = execute_query(query, fetch=True)
-    
     if attivita_utenti:
         df = pd.DataFrame(attivita_utenti)
+        # Applica filtri
+        if utenti_sel:
+            df = df[df['nome'].isin(utenti_sel)]
+        if stato_sel:
+            if "completate" in stato_sel and "in_corso" not in stato_sel:
+                df = df[df['completate'] > 0]
+            elif "in_corso" in stato_sel and "completate" not in stato_sel:
+                df = df[df['in_corso'] > 0]
+        if search_txt:
+            mask = df.apply(lambda row: search_txt.lower() in str(row['nome']).lower(), axis=1)
+            df = df[mask]
         st.dataframe(df, use_container_width=True)
     
     # Oggetti per stato
