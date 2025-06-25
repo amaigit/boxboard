@@ -1,5 +1,7 @@
 # BoxBoard
 
+[![Black formatted](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 > **Consiglio:** Per evitare conflitti e problemi di permessi, usa sempre un **ambiente virtuale Python** (`venv`) per installare le dipendenze, sviluppare e formattare il codice (es. con `black`).
 
 ![Boxboard Logo](https://github.com/amaigit/boxboard/raw/main/assets/logo.png)
@@ -406,3 +408,22 @@ GOOGLE_REDIRECT_URI=http://localhost:8501
   - Che la libreria `authlib` sia installata
 
 Per dettagli vedi anche la [guida rapida utente](./USER_GUIDE.md#login-con-google-oauth2).
+
+## �� Automazione qualità codice
+
+- Il codice è formattato automaticamente con [Black](https://github.com/psf/black) (vedi badge in alto)
+- È consigliato usare i pre-commit hook per Black e Flake8:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+Questo farà sì che, prima di ogni commit, il codice venga formattato e controllato automaticamente.
+
+Puoi lanciare i check manualmente con:
+```bash
+pre-commit run --all-files
+```
+
+Per configurazione vedi `.pre-commit-config.yaml`.
