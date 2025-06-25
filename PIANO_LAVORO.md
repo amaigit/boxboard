@@ -182,4 +182,25 @@ Consentire all'utente di scegliere, tramite interfaccia Streamlit, se:
 - [x] Esportazione/importazione dati (JSON)
 - [x] Test cross-browser e documentazione
 
+---
+
+## Roadmap avanzata e ottimizzazione (2024)
+
+### 1. Sicurezza e best practice
+- [ ] Restringere CORS in produzione (solo domini autorizzati)
+- [ ] Migliorare gestione variabili di ambiente e segreti
+- [ ] Documentare best practice di sicurezza (README)
+- [ ] (Opzionale) Rate limiting reale sulle API
+
+### 2. Automazione e qualità
+- [ ] Aggiungere workflow CI/CD (GitHub Actions) per test automatici su push/pull request
+- [ ] Badge di stato build/test nel README
+- [ ] (Opzionale) Linting e formattazione automatica
+
+### 3. Feature avanzate (opzionali)
+- [ ] Sincronizzazione dati browser/server (manuale o automatica)
+- [ ] Provider di autenticazione esterni (Google, LDAP, ecc.)
+- [ ] Dashboard avanzata, filtri, ricerca full-text
+- [ ] Notifiche, log avanzato, audit trail
+
 --- 
