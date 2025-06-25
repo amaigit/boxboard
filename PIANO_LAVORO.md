@@ -24,13 +24,13 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
   - [x] Iniziato il refactoring delle funzioni CRUD in `app.py` per usare SQLAlchemy ORM (lettura dati: utenti, locations, oggetti, attività, assegnazioni, note).
   - [x] Completato il refactoring delle funzioni di inserimento (add) per tutte le entità principali con SQLAlchemy ORM.
   - [x] Completato il refactoring CRUD (modifica, cancellazione) per tutte le entità principali con SQLAlchemy ORM.
-  - [ ] Garantire che le query siano compatibili con tutti i DB supportati (MariaDB/MySQL, PostgreSQL, SQLite).
+  - [x] Garantita la compatibilità delle query CRUD con tutti i DB supportati.
 
 ---
 
 ## Fase 2: Robustezza e usabilità
-- [ ] **Gestione degli errori e messaggi chiari**
-  - Migliorare la gestione delle eccezioni e fornire messaggi d'errore utili all'utente.
+- [x] **Gestione degli errori e messaggi chiari**
+  - Aggiunta gestione try/except e messaggi d'errore chiari nelle funzioni CRUD.
 
 - [ ] **Aggiornamento della documentazione**
   - Aggiornare il `README.md` con istruzioni chiare su come configurare e scegliere il database.
