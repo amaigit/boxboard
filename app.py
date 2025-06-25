@@ -960,6 +960,166 @@ def add_nota(testo, oggetto_id=None, attivita_id=None, location_id=None, autore_
         session.commit()
         return nota
 
+# --- UPDATE UTENTE ---
+def update_utente(utente_id, nome=None, ruolo=None, email=None):
+    with get_session() as session:
+        utente = session.get(Utente, utente_id)
+        if not utente:
+            return None
+        if nome is not None:
+            utente.nome = nome
+        if ruolo is not None:
+            utente.ruolo = ruolo
+        if email is not None:
+            utente.email = email
+        session.commit()
+        return utente
+
+# --- DELETE UTENTE ---
+def delete_utente(utente_id):
+    with get_session() as session:
+        utente = session.get(Utente, utente_id)
+        if utente:
+            session.delete(utente)
+            session.commit()
+            return True
+        return False
+
+# --- UPDATE LOCATION ---
+def update_location(location_id, nome=None, indirizzo=None, note=None):
+    with get_session() as session:
+        location = session.get(Location, location_id)
+        if not location:
+            return None
+        if nome is not None:
+            location.nome = nome
+        if indirizzo is not None:
+            location.indirizzo = indirizzo
+        if note is not None:
+            location.note = note
+        session.commit()
+        return location
+
+# --- DELETE LOCATION ---
+def delete_location(location_id):
+    with get_session() as session:
+        location = session.get(Location, location_id)
+        if location:
+            session.delete(location)
+            session.commit()
+            return True
+        return False
+
+# --- UPDATE OGGETTO ---
+def update_oggetto(oggetto_id, nome=None, descrizione=None, stato=None, tipo=None, location_id=None, contenitore_id=None):
+    with get_session() as session:
+        oggetto = session.get(Oggetto, oggetto_id)
+        if not oggetto:
+            return None
+        if nome is not None:
+            oggetto.nome = nome
+        if descrizione is not None:
+            oggetto.descrizione = descrizione
+        if stato is not None:
+            oggetto.stato = stato
+        if tipo is not None:
+            oggetto.tipo = tipo
+        if location_id is not None:
+            oggetto.location_id = location_id
+        if contenitore_id is not None:
+            oggetto.contenitore_id = contenitore_id
+        session.commit()
+        return oggetto
+
+# --- DELETE OGGETTO ---
+def delete_oggetto(oggetto_id):
+    with get_session() as session:
+        oggetto = session.get(Oggetto, oggetto_id)
+        if oggetto:
+            session.delete(oggetto)
+            session.commit()
+            return True
+        return False
+
+# --- UPDATE ATTIVITA ---
+def update_attivita(attivita_id, nome=None, descrizione=None):
+    with get_session() as session:
+        attivita = session.get(Attivita, attivita_id)
+        if not attivita:
+            return None
+        if nome is not None:
+            attivita.nome = nome
+        if descrizione is not None:
+            attivita.descrizione = descrizione
+        session.commit()
+        return attivita
+
+# --- DELETE ATTIVITA ---
+def delete_attivita(attivita_id):
+    with get_session() as session:
+        attivita = session.get(Attivita, attivita_id)
+        if attivita:
+            session.delete(attivita)
+            session.commit()
+            return True
+        return False
+
+# --- UPDATE OGGETTO_ATTIVITA ---
+def update_oggetto_attivita(oa_id, completata=None, data_prevista=None, data_completamento=None, assegnato_a=None):
+    with get_session() as session:
+        oa = session.get(OggettoAttivita, oa_id)
+        if not oa:
+            return None
+        if completata is not None:
+            oa.completata = completata
+        if data_prevista is not None:
+            oa.data_prevista = data_prevista
+        if data_completamento is not None:
+            oa.data_completamento = data_completamento
+        if assegnato_a is not None:
+            oa.assegnato_a = assegnato_a
+        session.commit()
+        return oa
+
+# --- DELETE OGGETTO_ATTIVITA ---
+def delete_oggetto_attivita(oa_id):
+    with get_session() as session:
+        oa = session.get(OggettoAttivita, oa_id)
+        if oa:
+            session.delete(oa)
+            session.commit()
+            return True
+        return False
+
+# --- UPDATE NOTA ---
+def update_nota(nota_id, testo=None, oggetto_id=None, attivita_id=None, location_id=None, autore_id=None):
+    with get_session() as session:
+        nota = session.get(Nota, nota_id)
+        if not nota:
+            return None
+        if testo is not None:
+            nota.testo = testo
+        if oggetto_id is not None:
+            nota.oggetto_id = oggetto_id
+        if attivita_id is not None:
+            nota.attivita_id = attivita_id
+        if location_id is not None:
+            nota.location_id = location_id
+        if autore_id is not None:
+            nota.autore_id = autore_id
+        session.commit()
+        return nota
+
+# --- DELETE NOTA ---
+def delete_nota(nota_id):
+    with get_session() as session:
+        nota = session.get(Nota, nota_id)
+        if nota:
+            session.delete(nota)
+            session.commit()
+            return True
+        return False
+
 # === MAIN APP ===
 
 def main():

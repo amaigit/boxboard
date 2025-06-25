@@ -20,7 +20,7 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
 - [ ] **Refactoring del codice**
   - [x] Iniziato il refactoring delle funzioni CRUD in `app.py` per usare SQLAlchemy ORM (lettura dati: utenti, locations, oggetti, attività, assegnazioni, note).
   - [x] Completato il refactoring delle funzioni di inserimento (add) per tutte le entità principali con SQLAlchemy ORM.
-  - [ ] Completare il refactoring CRUD (modifica, cancellazione, relazioni complesse).
+  - [x] Completato il refactoring CRUD (modifica, cancellazione) per tutte le entità principali con SQLAlchemy ORM.
   - [ ] Garantire che le query siano compatibili con tutti i DB supportati (MariaDB/MySQL, PostgreSQL, SQLite).
 
 ---
