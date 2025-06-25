@@ -100,10 +100,10 @@ Naviga tra le sezioni dal menu laterale: Utenti, Location, Oggetti, Attività, N
 
 ## Login con Google (OAuth2)
 
-Oltre al login classico, puoi autenticarti con il tuo account Google:
+Oltre al login classico, puoi autenticarti con il tuo account Google (usando la libreria authlib):
 
 1. Crea un progetto su Google Cloud Console e ottieni le credenziali OAuth2
-2. Imposta le variabili `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET` nel file `.env`
+2. Imposta le variabili `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` e `GOOGLE_REDIRECT_URI` nel file `.env`
 3. All'avvio scegli "Login con Google" nella sidebar
 4. Se l'email non esiste nel database, viene creato un nuovo utente "Operatore" automaticamente
 5. Puoi sempre usare anche il login classico
@@ -113,7 +113,7 @@ Oltre al login classico, puoi autenticarti con il tuo account Google:
 - Puoi limitare l'accesso a specifici domini email modificando la logica in `app.py`
 
 **FAQ**
-- *Non vedo il pulsante Google?* Verifica che le variabili siano impostate e la libreria installata
+- *Non vedo il pulsante Google?* Verifica che le variabili siano impostate e che la libreria `authlib` sia installata
 - *Errore di redirect?* Controlla che l'URI sia autorizzato su Google Cloud
 
 ---

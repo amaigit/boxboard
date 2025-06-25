@@ -366,7 +366,7 @@ Per abilitare la modalità solo-browser:
 
 ## Login con Google (OAuth2)
 
-BoxBoard supporta l'autenticazione tramite Google (OAuth2) oltre al login classico.
+BoxBoard supporta l'autenticazione tramite Google (OAuth2) oltre al login classico, usando la libreria [authlib](https://docs.authlib.org/).
 
 ### Prerequisiti
 - Crea un progetto su [Google Cloud Console](https://console.cloud.google.com/)
@@ -379,6 +379,7 @@ Aggiungi queste variabili al tuo `.env`:
 ```
 GOOGLE_CLIENT_ID=... (dal Google Cloud)
 GOOGLE_CLIENT_SECRET=... (dal Google Cloud)
+GOOGLE_REDIRECT_URI=http://localhost:8501
 ```
 
 ### Flusso di login
@@ -396,6 +397,6 @@ GOOGLE_CLIENT_SECRET=... (dal Google Cloud)
 - Se il login Google non funziona, verifica:
   - Che le variabili d'ambiente siano corrette
   - Che l'URI di redirect sia autorizzato su Google Cloud
-  - Che la libreria `streamlit-oauth-client` sia installata
+  - Che la libreria `authlib` sia installata
 
 Per dettagli vedi anche la [guida rapida utente](./USER_GUIDE.md#login-con-google-oauth2).
