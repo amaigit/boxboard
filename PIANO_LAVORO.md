@@ -181,6 +181,7 @@ Consentire all'utente di scegliere, tramite interfaccia Streamlit, se:
 - [x] CRUD locale per tutte le entità principali
 - [x] Esportazione/importazione dati (JSON)
 - [x] Test cross-browser e documentazione
+- [x] Logica JS Dexie.js per CRUD locale, esportazione/importazione e sync manuale pronta all'integrazione
 
 ---
 
@@ -216,5 +217,11 @@ Permettere all'utente di sincronizzare i dati tra modalità browser (IndexedDB/D
 - [ ] Provider di autenticazione esterni (Google, LDAP, ecc.)
 - [ ] Dashboard avanzata, filtri, ricerca full-text
 - [ ] Notifiche, log avanzato, audit trail
+
+### 4. Funzionalità avanzate browser
+- [ ] Sincronizzazione automatica dati locali/server (Dexie.js + API REST)
+- [ ] UI CRUD interattiva (tabella dinamica, modali, filtri, ricerca)
+- [ ] Notifiche avanzate (successo, errore, stato online/offline, storico operazioni)
+- [ ] Commit e push su GitHub ad ogni step
 
 --- 
