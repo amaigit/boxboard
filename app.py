@@ -1047,7 +1047,7 @@ authenticator = stauth.Authenticate(
     users, "boxboard_cookie", "boxboard_auth_key", cookie_expiry_days=7
 )
 
-name, authentication_status, username = authenticator.login("Login", "main")
+name, authentication_status, username = authenticator.login("Login", "sidebar")
 
 if authentication_status is False:
     st.error("Username o password errati")
@@ -1223,7 +1223,7 @@ if login_method == "Google":
         st.session_state["user_nome"] = user_google.nome
         st.session_state["user_ruolo"] = user_google.ruolo
 elif login_method == "Classico":
-    name, authentication_status, username = authenticator.login("Login", "main")
+    name, authentication_status, username = authenticator.login("Login", "sidebar")
     if authentication_status is False:
         st.error("Username o password errati")
     if authentication_status is None:
