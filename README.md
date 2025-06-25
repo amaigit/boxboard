@@ -208,3 +208,9 @@ Prossimi sviluppi:
 - Form per aggiungere nuovo utente (solo Coordinatore)
 - Modifica/cancellazione utenti esistenti (solo Coordinatore)
 - Un Coordinatore non può eliminare se stesso
+
+## Tracciamento delle operazioni
+
+- Tutte le operazioni di creazione, modifica e cancellazione utenti vengono registrate in una tabella di log
+- I Coordinatori possono visualizzare il log delle ultime 100 operazioni dalla sidebar (voce "Log Operazioni")
+- Il log mostra: chi ha eseguito l'azione, tipo di operazione, entità coinvolta, dettagli e data/ora

@@ -59,3 +59,14 @@ CREATE TABLE note (
     autore_id INT REFERENCES utenti(id),
     data TIMESTAMP DEFAULT NOW()
 );
+
+-- LOG OPERAZIONI
+CREATE TABLE IF NOT EXISTS log_operazioni (
+    id SERIAL PRIMARY KEY,
+    utente_id INT NOT NULL REFERENCES utenti(id),
+    azione VARCHAR(50) NOT NULL,
+    entita VARCHAR(50) NOT NULL,
+    entita_id INT,
+    dettagli TEXT,
+    timestamp TIMESTAMP DEFAULT NOW()
+);

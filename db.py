@@ -106,4 +106,15 @@ class Nota(Base):
     oggetto = relationship('Oggetto', back_populates='note')
     attivita = relationship('Attivita', back_populates='note')
     location = relationship('Location', back_populates='note_rel')
-    autore = relationship('Utente', back_populates='note') 
+    autore = relationship('Utente', back_populates='note')
+
+class LogOperazione(Base):
+    __tablename__ = 'log_operazioni'
+    id = Column(Integer, primary_key=True)
+    utente_id = Column(Integer, ForeignKey('utenti.id'), nullable=False)
+    azione = Column(String(50), nullable=False)  # es: 'create', 'update', 'delete'
+    entita = Column(String(50), nullable=False)  # es: 'oggetto', 'utente', ...
+    entita_id = Column(Integer, nullable=True)
+    dettagli = Column(Text)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+    utente = relationship('Utente') 

@@ -6,7 +6,7 @@ from datetime import datetime, date
 import warnings
 import config
 warnings.filterwarnings('ignore')
-from db import get_session, Utente, Location, Oggetto, Attivita, OggettoAttivita, Nota
+from db import get_session, Utente, Location, Oggetto, Attivita, OggettoAttivita, Nota, LogOperazione
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import streamlit_authenticator as stauth
 import yaml
@@ -105,7 +105,7 @@ def show_utenti(current_user):
                 email = st.text_input("Email")
             if st.form_submit_button("Aggiungi Utente"):
                 if nome:
-                    add_utente(nome, ruolo, email if email else None)
+                    add_utente(nome, ruolo, email if email else None, current_user.id)
                     st.success(f"Utente '{nome}' aggiunto con successo!")
                     st.rerun()
                 else:
@@ -123,14 +123,14 @@ def show_utenti(current_user):
             with col2:
                 nuova_email = st.text_input("Email", value=utente_sel.email)
             if st.form_submit_button("Salva Modifiche"):
-                update_utente(utente_sel.id, nome=nuovo_nome, ruolo=nuovo_ruolo, email=nuova_email)
+                update_utente(utente_sel.id, nome=nuovo_nome, ruolo=nuovo_ruolo, email=nuova_email, current_user_id=current_user.id)
                 st.success("Utente aggiornato!")
                 st.rerun()
             if st.form_submit_button("Elimina Utente"):
                 if utente_sel.id == current_user.id:
                     st.error("Non puoi eliminare te stesso!")
                 else:
-                    delete_utente(utente_sel.id)
+                    delete_utente(utente_sel.id, current_user.id)
                     st.success("Utente eliminato!")
                     st.rerun()
     else:
@@ -650,13 +650,47 @@ def show_statistiche():
         st.dataframe(df, use_container_width=True)
         st.bar_chart(df.set_index('contenitore'))
 
+def show_log_operazioni():
+    st.header("📝 Log Operazioni")
+    with get_session() as session:
+        logs = session.query(LogOperazione).order_by(LogOperazione.timestamp.desc()).limit(100).all()
+        if logs:
+            data = [
+                {
+                    'id': l.id,
+                    'utente': l.utente.nome if l.utente else '',
+                    'azione': l.azione,
+                    'entita': l.entita,
+                    'entita_id': l.entita_id,
+                    'dettagli': l.dettagli,
+                    'timestamp': l.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+                } for l in logs
+            ]
+            st.dataframe(data, use_container_width=True)
+        else:
+            st.info("Nessuna operazione registrata.")
+
 # --- INSERIMENTO UTENTE ---
-def add_utente(nome, ruolo, email):
+def log_operazione(utente_id, azione, entita, entita_id=None, dettagli=None):
+    with get_session() as session:
+        log = LogOperazione(
+            utente_id=utente_id,
+            azione=azione,
+            entita=entita,
+            entita_id=entita_id,
+            dettagli=dettagli
+        )
+        session.add(log)
+        session.commit()
+
+def add_utente(nome, ruolo, email, current_user_id=None):
     try:
         with get_session() as session:
             utente = Utente(nome=nome, ruolo=ruolo, email=email)
             session.add(utente)
             session.commit()
+            if current_user_id:
+                log_operazione(current_user_id, 'create', 'utente', utente.id, f"Aggiunto utente {nome} ({email}) con ruolo {ruolo}")
             return utente
     except IntegrityError as e:
         print(f"Errore di integrità (utente): {e}")
@@ -759,12 +793,13 @@ def add_nota(testo, oggetto_id=None, attivita_id=None, location_id=None, autore_
         return None
 
 # --- UPDATE UTENTE ---
-def update_utente(utente_id, nome=None, ruolo=None, email=None):
+def update_utente(utente_id, nome=None, ruolo=None, email=None, current_user_id=None):
     try:
         with get_session() as session:
             utente = session.get(Utente, utente_id)
             if not utente:
                 return None
+            old = {'nome': utente.nome, 'ruolo': utente.ruolo, 'email': utente.email}
             if nome is not None:
                 utente.nome = nome
             if ruolo is not None:
@@ -772,19 +807,23 @@ def update_utente(utente_id, nome=None, ruolo=None, email=None):
             if email is not None:
                 utente.email = email
             session.commit()
+            if current_user_id:
+                log_operazione(current_user_id, 'update', 'utente', utente.id, f"Da {old} a {{'nome': {utente.nome}, 'ruolo': {utente.ruolo}, 'email': {utente.email}}}")
             return utente
     except SQLAlchemyError as e:
         print(f"Errore update utente: {e}")
         return None
 
 # --- DELETE UTENTE ---
-def delete_utente(utente_id):
+def delete_utente(utente_id, current_user_id=None):
     try:
         with get_session() as session:
             utente = session.get(Utente, utente_id)
             if utente:
                 session.delete(utente)
                 session.commit()
+                if current_user_id:
+                    log_operazione(current_user_id, 'delete', 'utente', utente_id, f"Eliminato utente {utente.nome} ({utente.email})")
                 return True
             return False
     except SQLAlchemyError as e:
@@ -1085,6 +1124,8 @@ if authentication_status:
             "📝 Note": "note",
             "📈 Statistiche": "statistiche"
         }
+        if current_user and current_user.ruolo == 'Coordinatore':
+            menu_options["📝 Log Operazioni"] = "log"
         selected = st.sidebar.selectbox(
             "🧭 Navigazione",
             options=list(menu_options.keys()),
@@ -1105,6 +1146,8 @@ if authentication_status:
             show_note()
         elif page == "statistiche":
             show_statistiche()
+        elif page == "log":
+            show_log_operazioni()
         st.sidebar.markdown("---")
         st.sidebar.markdown("**Sistema Svuotacantine v1.0**")
         st.sidebar.markdown("Gestione completa inventario")

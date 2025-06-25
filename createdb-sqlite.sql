@@ -66,3 +66,15 @@ CREATE TABLE note (
     FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE CASCADE,
     FOREIGN KEY (autore_id) REFERENCES utenti(id)
 );
+
+-- LOG OPERAZIONI
+CREATE TABLE IF NOT EXISTS log_operazioni (
+    id INTEGER PRIMARY KEY,
+    utente_id INTEGER NOT NULL,
+    azione TEXT NOT NULL,
+    entita TEXT NOT NULL,
+    entita_id INTEGER,
+    dettagli TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (utente_id) REFERENCES utenti(id)
+);
