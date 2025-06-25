@@ -13,6 +13,8 @@ import yaml
 from yaml.loader import SafeLoader
 import hashlib
 from streamlit_components.crud_browser import st_crud_browser
+from streamlit_oauth import OAuth2Component
+import os
 
 # Configurazione della pagina
 st.set_page_config(
