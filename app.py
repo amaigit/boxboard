@@ -1066,7 +1066,7 @@ if login_method == "Google":
 
 elif login_method == "Classico":
     # SOLUZIONE 1: Compatibile con tutte le versioni di streamlit-authenticator
-    name, authentication_status, username = authenticator.login("Login", location="sidebar")
+    name, authentication_status, username = authenticator.login("Login", "sidebar")
     
     if authentication_status is False:
         st.sidebar.error("Username o password errati")
