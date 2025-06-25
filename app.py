@@ -1153,5 +1153,21 @@ if authentication_status:
         st.sidebar.markdown("Gestione completa inventario")
     main_router()
 
+# --- PANNELLO SCELTA MODALITÀ DB (SERVER/BROWSER) ---
+def pannello_scelta_modalita():
+    st.sidebar.title("Modalità database")
+    scelta = st.sidebar.radio(
+        "Scegli dove salvare i dati:",
+        ["Server (multiutente, condiviso)", "Browser (locale, privato)"]
+    )
+    if scelta == "Server (multiutente, condiviso)":
+        st.sidebar.info("Dati salvati su database centralizzato. Ideale per collaborazione, backup, accesso remoto. Richiede configurazione DB.")
+    else:
+        st.sidebar.warning("Dati salvati solo nel browser. Ideale per privacy, demo, uso offline. Rischio perdita dati se si cancella la cache/browser. Nessun invio dati al server.")
+    st.session_state["modalita_db"] = "server" if "Server" in scelta else "browser"
+
+# Chiamata al pannello (da inserire all'avvio app)
+pannello_scelta_modalita()
+
 if __name__ == "__main__":
     main()
