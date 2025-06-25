@@ -26,6 +26,11 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
   - [x] Completato il refactoring CRUD (modifica, cancellazione) per tutte le entità principali con SQLAlchemy ORM.
   - [x] Garantita la compatibilità delle query CRUD con tutti i DB supportati.
 
+## Refactoring CRUD: update/delete
+- [x] Aggiornare tutte le chiamate nelle interfacce Streamlit per usare le nuove funzioni update_*/delete_ di crud.py
+- [x] Scrivere test automatici per tutte le funzioni CRUD (add, update, delete) di tutte le entità
+- [x] Documentare la nuova API CRUD (firma, comportamento, valori di ritorno) in README o in una sezione dedicata
+
 ---
 
 ## Fase 2: Robustezza e usabilità
