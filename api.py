@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status, Body, Query
+from fastapi import FastAPI, Depends, HTTPException, status, Body, Query, UploadFile, File
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse, StreamingResponse
 from jose import JWTError, jwt
@@ -10,6 +10,7 @@ import os
 import csv
 import io
 from fastapi.middleware.cors import CORSMiddleware
+import json
 
 # --- CONFIG ---
 SECRET_KEY = os.environ.get("API_SECRET_KEY", "supersecretkey")
@@ -594,6 +595,68 @@ def export_data(entita: str, formato: str = Query("json", enum=["json", "csv"]),
         elif formato == "csv":
             output = to_csv(data, columns)
             return StreamingResponse(iter([output.getvalue()]), media_type="text/csv", headers={"Content-Disposition": f"attachment; filename={entita}.csv"})
+
+# --- ENDPOINT BULK EXPORT/IMPORT PER SYNC BROWSER/SERVER ---
+@app.get("/export-bulk/{entita}", tags=["Sync"])
+def export_bulk(entita: str, admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        if entita == "utenti":
+            data = session.query(Utente).all()
+            columns = ["id", "nome", "email", "ruolo"]
+        elif entita == "locations":
+            data = session.query(Location).all()
+            columns = ["id", "nome", "indirizzo", "note", "data_creazione"]
+        elif entita == "oggetti":
+            data = session.query(Oggetto).all()
+            columns = ["id", "nome", "descrizione", "stato", "tipo", "location_id", "contenitore_id", "data_rilevamento"]
+        elif entita == "attivita":
+            data = session.query(Attivita).all()
+            columns = ["id", "nome", "descrizione"]
+        elif entita == "note":
+            data = session.query(Nota).all()
+            columns = ["id", "testo", "oggetto_id", "attivita_id", "location_id", "autore_id", "data"]
+        else:
+            raise HTTPException(400, "Entità non supportata")
+        return [{col: getattr(row, col) for col in columns} for row in data]
+
+@app.post("/import-bulk/{entita}", tags=["Sync"])
+def import_bulk(entita: str, file: UploadFile = File(...), admin: Utente = Depends(require_admin)):
+    content = file.file.read()
+    try:
+        items = json.loads(content)
+    except Exception:
+        raise HTTPException(400, "File JSON non valido")
+    with get_session() as session:
+        count = 0
+        if entita == "utenti":
+            for item in items:
+                nuovo = Utente(**item)
+                session.merge(nuovo)
+                count += 1
+        elif entita == "locations":
+            for item in items:
+                nuovo = Location(**item)
+                session.merge(nuovo)
+                count += 1
+        elif entita == "oggetti":
+            for item in items:
+                nuovo = Oggetto(**item)
+                session.merge(nuovo)
+                count += 1
+        elif entita == "attivita":
+            for item in items:
+                nuovo = Attivita(**item)
+                session.merge(nuovo)
+                count += 1
+        elif entita == "note":
+            for item in items:
+                nuovo = Nota(**item)
+                session.merge(nuovo)
+                count += 1
+        else:
+            raise HTTPException(400, "Entità non supportata")
+        session.commit()
+    return {"detail": f"Importati/aggiornati {count} record in {entita}"}
 
 if __name__ == "__main__":
     import uvicorn

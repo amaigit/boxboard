@@ -19,7 +19,10 @@ def st_crud_browser(key=None):
         </ul>
         <button disabled style='margin:0.5em;'>Esporta dati (JSON)</button>
         <button disabled style='margin:0.5em;'>Importa dati (JSON)</button>
-        <br><i>Qui saranno attivi i pulsanti per esportare/importare tutti i dati in formato JSON.<br>
+        <button disabled style='margin:0.5em;background:#d0f;'>Sincronizza con server (upload)</button>
+        <button disabled style='margin:0.5em;background:#0df;'>Sincronizza con server (download)</button>
+        <br><i>I pulsanti di sincronizzazione permetteranno di inviare/ricevere dati dal server tramite API REST.<br>
+        Sarà possibile gestire conflitti e merge manualmente.<br>
         Questa è una preview tecnica: la logica JS sarà integrata in seguito.</i>
     </div>
-    """, height=320, key=key) 
+    """, height=400, key=key) 

@@ -190,8 +190,8 @@ Consentire all'utente di scegliere, tramite interfaccia Streamlit, se:
 Permettere all'utente di sincronizzare i dati tra modalità browser (IndexedDB/Dexie.js) e backend server (API REST).
 
 ### Roadmap
-- [ ] Progettazione UX per sincronizzazione manuale (pulsanti "Sincronizza con server")
-- [ ] Endpoint API per import/export bulk (JSON)
+- [x] Progettazione UX per sincronizzazione manuale (pulsanti "Sincronizza con server")
+- [x] Endpoint API per import/export bulk (JSON)
 - [ ] Integrazione pulsanti di sync nel componente browser
 - [ ] Documentazione e warning su conflitti/merge
 - [ ] (Futuro) Progettazione logica di sincronizzazione automatica (push/pull, gestione conflitti)
