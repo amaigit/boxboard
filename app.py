@@ -1065,16 +1065,8 @@ if login_method == "Google":
         st.session_state["user_ruolo"] = user_google.ruolo
 
 elif login_method == "Classico":
-    # SOLUZIONE 1: Usa 'main' invece di 'sidebar'
-    with st.sidebar:
-        name, authentication_status, username = authenticator.login("Login")
-    
-    # ALTERNATIVA - SOLUZIONE 2: Se la versione supporta ancora location='sidebar'
-    # name, authentication_status, username = authenticator.login("Login", location="sidebar")
-    
-    # ALTERNATIVA - SOLUZIONE 3: Ometti il parametro location (usa default)
-    # with st.sidebar:
-    #     name, authentication_status, username = authenticator.login("Login")
+    # SOLUZIONE 1: Compatibile con tutte le versioni di streamlit-authenticator
+    name, authentication_status, username = authenticator.login("Login", location="sidebar")
     
     if authentication_status is False:
         st.sidebar.error("Username o password errati")
