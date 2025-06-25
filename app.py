@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, date
 import warnings
+import hashlib
 
 warnings.filterwarnings("ignore")
 from db import (
