@@ -139,3 +139,44 @@ Se tutti i test sono superati, la configurazione è corretta!
 2. Modifica `db.py` aggiungendo la stringa di connessione per il nuovo DBMS.
 3. Aggiorna `.env.example` e la documentazione.
 4. (Opzionale) Adatta gli script SQL di creazione se vuoi supportare anche l'inizializzazione manuale.
+
+## 🌐 Connessione a database remoto
+
+L'applicazione può collegarsi a un database remoto (MariaDB/MySQL, PostgreSQL) semplicemente configurando il file `.env` con i parametri del server remoto.
+
+### Esempio MariaDB/MySQL remoto
+```
+DB_TYPE=mariadb
+DB_HOST=123.123.123.123      # IP o hostname del server remoto
+DB_PORT=3306
+DB_NAME=svuotacantine
+DB_USER=nomeutente
+DB_PASSWORD=supersegreta
+```
+
+### Esempio PostgreSQL remoto
+```
+DB_TYPE=postgresql
+DB_HOST=db.miosito.com
+DB_PORT=5432
+DB_NAME=svuotacantine
+DB_USER=nomeutente
+DB_PASSWORD=supersegreta
+```
+
+#### Requisiti per la connessione remota
+- Il database deve essere accessibile dalla macchina/server dove gira Streamlit (deve poter raggiungere l'IP/hostname e la porta del DB).
+- Il database remoto deve accettare connessioni esterne (non solo da localhost).
+- Le credenziali devono essere corrette e l'utente deve avere i permessi necessari.
+- Il firewall del server DB deve permettere le connessioni in ingresso sulla porta del database.
+
+#### Consigli di sicurezza
+- Usa password robuste e, se possibile, connessioni cifrate (SSL/TLS).
+- Non esporre il database direttamente su Internet senza protezioni (VPN, firewall, whitelist IP).
+
+#### Troubleshooting
+- Se la connessione fallisce, verifica:
+  - Che il server DB sia in ascolto sull'IP/porta giusti
+  - Che il firewall non blocchi la porta
+  - Che l'utente abbia i permessi di accesso da remoto
+  - Che i parametri in `.env` siano corretti
