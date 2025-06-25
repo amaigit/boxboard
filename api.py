@@ -19,9 +19,11 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 # --- FastAPI setup ---
 app = FastAPI(title="BoxBoard API", version="1.0.0")
 
+# --- CORS ---
+CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

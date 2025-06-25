@@ -187,9 +187,9 @@ Consentire all'utente di scegliere, tramite interfaccia Streamlit, se:
 ## Roadmap avanzata e ottimizzazione (2024)
 
 ### 1. Sicurezza e best practice
-- [ ] Restringere CORS in produzione (solo domini autorizzati)
+- [x] Restringere CORS in produzione (solo domini autorizzati)
 - [ ] Migliorare gestione variabili di ambiente e segreti
-- [ ] Documentare best practice di sicurezza (README)
+- [x] Documentare best practice di sicurezza (README)
 - [ ] (Opzionale) Rate limiting reale sulle API
 
 ### 2. Automazione e qualità

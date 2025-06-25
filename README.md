@@ -272,3 +272,11 @@ CORS abilitato per tutte le origini (in sviluppo). In produzione si consiglia di
 - [Test CRUD automatici](#-test-crud-automatici)
 - [API REST](#api-rest)
 - [Test automatici](#test-automatici)
+
+## Sicurezza e best practice
+
+- In produzione, imposta la variabile d'ambiente `CORS_ORIGINS` con i domini autorizzati (es: `CORS_ORIGINS=https://boxboard.example.com`)
+- Non lasciare mai CORS aperto (`*`) in produzione!
+- Usa password robuste e aggiorna regolarmente le dipendenze.
+- Proteggi il file `.env` e non committare mai segreti o credenziali.
+- Consulta la sezione 'Roadmap avanzata' in [PIANO_LAVORO.md](./PIANO_LAVORO.md) per ulteriori best practice.
