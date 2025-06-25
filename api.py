@@ -5,7 +5,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from typing import Optional
-from db import get_session, Utente, Location, Oggetto
+from db import get_session, Utente, Location, Oggetto, Attivita
 import os
 
 # --- CONFIG ---
@@ -108,6 +108,21 @@ class OggettoUpdate(BaseModel):
     location_id: Optional[int] = None
     contenitore_id: Optional[int] = None
     data_rilevamento: Optional[datetime] = None
+
+class AttivitaOut(BaseModel):
+    id: int
+    nome: str
+    descrizione: Optional[str] = None
+    class Config:
+        orm_mode = True
+
+class AttivitaCreate(BaseModel):
+    nome: str
+    descrizione: Optional[str] = None
+
+class AttivitaUpdate(BaseModel):
+    nome: Optional[str] = None
+    descrizione: Optional[str] = None
 
 # --- UTILITY JWT ---
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -373,6 +388,56 @@ def delete_oggetto(oggetto_id: int, admin: Utente = Depends(require_admin)):
         session.delete(obj)
         session.commit()
         return {"detail": "Oggetto eliminato"}
+
+# --- ENDPOINT CRUD ATTIVITA ---
+@app.get("/attivita", response_model=list[AttivitaOut], tags=["Attivita"])
+def list_attivita(user: Utente = Depends(get_current_user)):
+    with get_session() as session:
+        attivita = session.query(Attivita).all()
+        return attivita
+
+@app.get("/attivita/{attivita_id}", response_model=AttivitaOut, tags=["Attivita"])
+def get_attivita(attivita_id: int, user: Utente = Depends(get_current_user)):
+    with get_session() as session:
+        att = session.get(Attivita, attivita_id)
+        if not att:
+            raise HTTPException(404, "Attività non trovata")
+        return att
+
+@app.post("/attivita", response_model=AttivitaOut, tags=["Attivita"])
+def create_attivita(attivita: AttivitaCreate, admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        nuova = Attivita(
+            nome=attivita.nome,
+            descrizione=attivita.descrizione
+        )
+        session.add(nuova)
+        session.commit()
+        session.refresh(nuova)
+        return nuova
+
+@app.put("/attivita/{attivita_id}", response_model=AttivitaOut, tags=["Attivita"])
+def update_attivita(attivita_id: int, attivita: AttivitaUpdate, admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        att = session.get(Attivita, attivita_id)
+        if not att:
+            raise HTTPException(404, "Attività non trovata")
+        if attivita.nome is not None:
+            att.nome = attivita.nome
+        if attivita.descrizione is not None:
+            att.descrizione = attivita.descrizione
+        session.commit()
+        return att
+
+@app.delete("/attivita/{attivita_id}", tags=["Attivita"])
+def delete_attivita(attivita_id: int, admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        att = session.get(Attivita, attivita_id)
+        if not att:
+            raise HTTPException(404, "Attività non trovata")
+        session.delete(att)
+        session.commit()
+        return {"detail": "Attività eliminata"}
 
 if __name__ == "__main__":
     import uvicorn

@@ -116,7 +116,7 @@ Esporre tutte le funzionalità del sistema tramite API RESTful, in modo che ogni
 - [ ] Permessi: tutti possono leggere, solo admin può modificare/cancellare
 
 #### Fase 5: Attività
-- [ ] Endpoint CRUD attività
+- [x] Endpoint CRUD attività
 - [ ] Endpoint per assegnazione attività a oggetti/utenti
 - [ ] Permessi: tutti possono leggere, solo admin può modificare/cancellare
 
