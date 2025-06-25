@@ -158,11 +158,16 @@ Consentire all'utente di scegliere, tramite interfaccia Streamlit, se:
 - Sincronizzazione: solo tramite esportazione/importazione manuale.
 - Sicurezza: dati browser solo locali, nessun invio al server.
 
-### Roadmap di sviluppo
+### Scelta tecnica
+- Per la modalità browser verrà utilizzato **IndexedDB** tramite la libreria [Dexie.js](https://dexie.org/), che offre API moderne e semplici per CRUD locale, storage ampio e buona compatibilità cross-browser.
+- Dexie.js semplifica la gestione delle tabelle e delle query rispetto all'API IndexedDB nativa.
+- In futuro si potrà valutare l'uso di sql.js o wa-sqlite se servirà compatibilità SQL o esportazione in formato SQLite.
+
+### Roadmap di sviluppo (modalità browser)
 1. Progettazione UX pannello di scelta modalità (Streamlit)
-2. Implementazione Streamlit Component per CRUD locale (IndexedDB/sql.js)
-3. Integrazione logica di scelta e fallback
-4. Esportazione/importazione dati tra modalità
+2. Implementazione Streamlit Component custom per CRUD locale con Dexie.js
+3. Integrazione logica di scelta e fallback tra modalità server/browser
+4. Esportazione/importazione dati tra modalità (JSON)
 5. Test cross-browser e documentazione
 
 ### Rischi e note
