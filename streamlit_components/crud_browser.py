@@ -25,4 +25,12 @@ def st_crud_browser(key=None):
         Sarà possibile gestire conflitti e merge manualmente.<br>
         Questa è una preview tecnica: la logica JS sarà integrata in seguito.</i>
     </div>
-    """, height=400, key=key) 
+    """, height=400, key=key)
+
+    st.markdown("""
+    **Come integrare la logica JS:**
+    - Includi Dexie.js: `<script src='https://unpkg.com/dexie@3.2.4/dist/dexie.min.js'></script>`
+    - Includi il file `crud_browser_frontend.js` fornito nel repo.
+    - Collega i pulsanti HTML alle funzioni JS (es: `onclick='exportAll()'`, `onclick='syncUpload(...)'`).
+    - Consulta il README e i commenti nel file JS per dettagli.
+    """) 
