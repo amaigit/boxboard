@@ -1047,23 +1047,42 @@ authenticator = stauth.Authenticate(
     users, "boxboard_cookie", "boxboard_auth_key", cookie_expiry_days=7
 )
 
-name, authentication_status, username = authenticator.login("Login", "main")
+# --- LOGIN UI ---
+st.sidebar.header("Login")
+login_method = st.sidebar.radio(
+    "Metodo di accesso", ["Classico", "Google"], horizontal=True
+)
+current_user = None
+if login_method == "Google":
+    handle_google_callback()
+    user_google = login_google_authlib()
+    if user_google:
+        st.sidebar.success(f"Autenticato come {user_google.nome} (Google)")
+        current_user = user_google
+        st.session_state["user_email"] = user_google.email
+        st.session_state["user_nome"] = user_google.nome
+        st.session_state["user_ruolo"] = user_google.ruolo
+elif login_method == "Classico":
+    name, authentication_status, username = authenticator.login("Login", "sidebar")
+    if authentication_status is False:
+        st.error("Username o password errati")
+    if authentication_status is None:
+        st.warning("Inserisci username e password")
+    if authentication_status:
+        authenticator.logout("Logout", "sidebar")
+        st.sidebar.success(f"Autenticato come {name}")
+        utenti = get_utenti()
+        for u in utenti:
+            if u.email == username:
+                current_user = u
+                break
+        st.session_state["user_email"] = current_user.email
+        st.session_state["user_nome"] = current_user.nome
+        st.session_state["user_ruolo"] = current_user.ruolo
 
-if authentication_status is False:
-    st.error("Username o password errati")
-if authentication_status is None:
-    st.warning("Inserisci username e password")
-if authentication_status:
-    authenticator.logout("Logout", "sidebar")
-    st.sidebar.success(f"Autenticato come {name}")
-    # Recupero utente corrente dal DB
-    current_user = None
-    for u in get_utenti():
-        if u.email == username:
-            current_user = u
-            break
+# --- ROUTING SOLO SE AUTENTICATO ---
+if current_user:
 
-    # --- qui va il resto dell'app ---
     def main_router():
         menu_options = {
             "🏠 Dashboard": "dashboard",
@@ -1206,80 +1225,6 @@ def handle_google_callback():
         st.session_state["google_token"] = token
         st.experimental_set_query_params()
 
-
-# --- LOGIN UI ---
-st.sidebar.header("Login")
-login_method = st.sidebar.radio(
-    "Metodo di accesso", ["Classico", "Google"], horizontal=True
-)
-current_user = None
-if login_method == "Google":
-    handle_google_callback()
-    user_google = login_google_authlib()
-    if user_google:
-        st.sidebar.success(f"Autenticato come {user_google.nome} (Google)")
-        current_user = user_google
-        st.session_state["user_email"] = user_google.email
-        st.session_state["user_nome"] = user_google.nome
-        st.session_state["user_ruolo"] = user_google.ruolo
-elif login_method == "Classico":
-    name, authentication_status, username = authenticator.login("Login", "sidebar")
-    if authentication_status is False:
-        st.error("Username o password errati")
-    if authentication_status is None:
-        st.warning("Inserisci username e password")
-    if authentication_status:
-        authenticator.logout("Logout", "sidebar")
-        st.sidebar.success(f"Autenticato come {name}")
-        utenti = get_utenti()
-        for u in utenti:
-            if u.email == username:
-                current_user = u
-                break
-        st.session_state["user_email"] = current_user.email
-        st.session_state["user_nome"] = current_user.nome
-        st.session_state["user_ruolo"] = current_user.ruolo
-
-# --- ROUTING SOLO SE AUTENTICATO ---
-if current_user:
-
-    def main_router():
-        menu_options = {
-            "🏠 Dashboard": "dashboard",
-            "👥 Utenti": "utenti",
-            "📍 Location": "locations",
-            "📦 Oggetti": "oggetti",
-            "⚡ Attività": "attivita",
-            "📝 Note": "note",
-            "📈 Statistiche": "statistiche",
-        }
-        if current_user and current_user.ruolo == "Coordinatore":
-            menu_options["📝 Log Operazioni"] = "log"
-        selected = st.sidebar.selectbox(
-            "🧭 Navigazione", options=list(menu_options.keys()), index=0
-        )
-        page = menu_options[selected]
-        if page == "utenti":
-            show_utenti(current_user)
-        elif page == "dashboard":
-            show_dashboard()
-        elif page == "locations":
-            show_locations()
-        elif page == "oggetti":
-            show_oggetti()
-        elif page == "attivita":
-            show_attivita()
-        elif page == "note":
-            show_note()
-        elif page == "statistiche":
-            show_statistiche()
-        elif page == "log":
-            show_log_operazioni()
-        st.sidebar.markdown("---")
-        st.sidebar.markdown("**Sistema Svuotacantine v1.0**")
-        st.sidebar.markdown("Gestione completa inventario")
-
-    main_router()
 
 if __name__ == "__main__":
     try:
