@@ -32,9 +32,8 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
 - [x] **Gestione degli errori e messaggi chiari**
   - Aggiunta gestione try/except e messaggi d'errore chiari nelle funzioni CRUD.
 
-- [ ] **Aggiornamento della documentazione**
-  - Aggiornare il `README.md` con istruzioni chiare su come configurare e scegliere il database.
-  - Spiegare come aggiungere nuovi DBMS in futuro.
+- [x] **Aggiornamento della documentazione**
+  - Aggiornato il `README.md` con istruzioni multi-database, test CRUD e aggiunta nuovi DBMS.
 
 - [ ] **Aggiunta di dati di esempio e test**
   - Fornire una funzione/script per popolare il database con dati di esempio.
