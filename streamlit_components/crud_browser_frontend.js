@@ -76,6 +76,94 @@ async function syncDownload(entity, apiUrl, token) {
     return items.length;
 }
 
+// --- GESTIONE CONFLITTI AVANZATA (SYNC AUTOMATICA) ---
+
+// Esempio: ogni record deve avere un campo 'updated_at' (timestamp ISO) sia locale che remoto
+// La funzione di sync ora confronta i record e, in caso di conflitto, mostra un popup per la scelta
+
+// Log locale dei conflitti risolti
+const storicoConflitti = [];
+
+async function syncEntityWithConflicts(entity, apiUrl, token) {
+    // Scarica dati remoti
+    const res = await fetch(`${apiUrl}/export-bulk/${entity}`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const remoteItems = await res.json();
+    const localItems = await db[entity].toArray();
+    const localMap = Object.fromEntries(localItems.map(x => [x.id, x]));
+    const remoteMap = Object.fromEntries(remoteItems.map(x => [x.id, x]));
+    // Unione e confronto
+    for (const id of new Set([...Object.keys(localMap), ...Object.keys(remoteMap)])) {
+        const local = localMap[id];
+        const remote = remoteMap[id];
+        if (local && remote) {
+            if (local.updated_at !== remote.updated_at) {
+                // Conflitto: mostra popup per risoluzione
+                await showConflictPopup(entity, local, remote);
+            } else {
+                // Nessun conflitto, aggiorna locale
+                await db[entity].put(remote);
+            }
+        } else if (remote && !local) {
+            await db[entity].add(remote);
+        } else if (local && !remote) {
+            // Record solo locale: opzionale, puoi chiedere se inviare al server
+            // Per ora, mantieni locale
+        }
+    }
+    // Upload dei dati locali risolti
+    await syncUpload(entity, apiUrl, token);
+}
+
+// Popup HTML per risoluzione conflitti
+async function showConflictPopup(entity, local, remote) {
+    return new Promise(resolve => {
+        const modal = document.createElement('div');
+        modal.style = 'position:fixed;top:10%;left:20%;width:60vw;background:#fff;padding:2em;z-index:99999;border:2px solid #888;box-shadow:0 4px 24px #0003;';
+        modal.innerHTML = `
+        <h3>Conflitto su ${entity} (ID: ${local.id})</h3>
+        <div style='display:flex;gap:2em;'>
+          <div style='flex:1;'>
+            <b>Locale</b><pre style='background:#f9f9f9'>${JSON.stringify(local, null, 2)}</pre>
+            <button id='keepLocal'>Mantieni locale</button>
+          </div>
+          <div style='flex:1;'>
+            <b>Server</b><pre style='background:#f9f9f9'>${JSON.stringify(remote, null, 2)}</pre>
+            <button id='keepRemote'>Mantieni server</button>
+          </div>
+        </div>
+        <button id='mergeManual' style='margin-top:1em;'>Unisci manualmente</button>
+        <button id='closePopup' style='float:right;'>Annulla</button>
+        `;
+        document.body.appendChild(modal);
+        document.getElementById('keepLocal').onclick = () => {
+            db[entity].put(local);
+            storicoConflitti.unshift({id: local.id, entity, scelta: 'locale', ts: new Date().toISOString()});
+            modal.remove();
+            resolve('locale');
+        };
+        document.getElementById('keepRemote').onclick = () => {
+            db[entity].put(remote);
+            storicoConflitti.unshift({id: local.id, entity, scelta: 'server', ts: new Date().toISOString()});
+            modal.remove();
+            resolve('server');
+        };
+        document.getElementById('mergeManual').onclick = () => {
+            // Per semplicità, scegli locale e logga come merge manuale (puoi estendere con UI di merge campi)
+            db[entity].put(local);
+            storicoConflitti.unshift({id: local.id, entity, scelta: 'merge', ts: new Date().toISOString()});
+            modal.remove();
+            resolve('merge');
+        };
+        document.getElementById('closePopup').onclick = () => {
+            modal.remove();
+            resolve('annulla');
+        };
+    });
+}
+
 // --- SINCRONIZZAZIONE AUTOMATICA ---
 
 // Lista delle entità da sincronizzare
@@ -90,8 +178,7 @@ async function autoSync(apiUrl, token) {
     let success = 0, fail = 0;
     for (const entity of ENTITIES) {
         try {
-            await syncUpload(entity, apiUrl, token);
-            await syncDownload(entity, apiUrl, token);
+            await syncEntityWithConflicts(entity, apiUrl, token);
             success++;
         } catch (e) {
             console.error('Sync fallita per', entity, e);
