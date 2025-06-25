@@ -11,7 +11,6 @@ from sqlalchemy import (
     Date,
 )
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
-import config
 from datetime import datetime
 from sqlalchemy import Enum as SqlEnum
 

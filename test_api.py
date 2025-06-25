@@ -1,7 +1,6 @@
 import pytest
 from httpx import AsyncClient
 from api import app
-import asyncio
 
 
 @pytest.mark.asyncio
@@ -17,21 +16,6 @@ async def test_login_and_crud():
     async with AsyncClient(app=app, base_url="http://test") as ac:
         # Crea utente admin di test (se non esiste)
         # NB: in un test reale, dovresti popolare il DB di test o mockare
-        from db import get_session, Utente
-
-        with get_session() as session:
-            admin = (
-                session.query(Utente).filter(Utente.email == "admin@test.com").first()
-            )
-            if not admin:
-                admin = Utente(
-                    nome="AdminTest",
-                    email="admin@test.com",
-                    ruolo="Coordinatore",
-                    password=None,
-                )
-                session.add(admin)
-                session.commit()
         # Login
         resp = await ac.post(
             "/login", data={"username": "admin@test.com", "password": "admin@test.com"}

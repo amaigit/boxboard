@@ -3,7 +3,6 @@ from fastapi import (
     Depends,
     HTTPException,
     status,
-    Body,
     Query,
     UploadFile,
     File,
@@ -239,9 +238,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     if user.password:
         valid = verify_password(form_data.password, user.password)
     else:
-        import hashlib
-
-        valid = form_data.password == hashlib.sha256(user.email.encode()).hexdigest()
+        valid = form_data.password == form_data.username
     if not valid:
         raise HTTPException(status_code=400, detail="Email o password non validi")
     access_token = create_access_token(data={"sub": user.email, "ruolo": user.ruolo})
@@ -368,11 +365,7 @@ def change_password(
     if current_user.password:
         valid = verify_password(data.old_password, current_user.password)
     else:
-        import hashlib
-
-        valid = (
-            data.old_password == hashlib.sha256(current_user.email.encode()).hexdigest()
-        )
+        valid = data.old_password == current_user.email
     if not valid:
         raise HTTPException(400, "Vecchia password errata")
     with get_session() as session:
@@ -800,9 +793,3 @@ def import_bulk(
             raise HTTPException(400, "Entità non supportata")
         session.commit()
     return {"detail": f"Importati/aggiornati {count} record in {entita}"}
-
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True)

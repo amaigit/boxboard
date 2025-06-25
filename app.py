@@ -1,10 +1,7 @@
 import streamlit as st
-import mysql.connector
-from mysql.connector import Error
 import pandas as pd
 from datetime import datetime, date
 import warnings
-import config
 
 warnings.filterwarnings("ignore")
 from db import (
@@ -21,9 +18,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
-import hashlib
 from streamlit_components.crud_browser import st_crud_browser
-from streamlit_oauth import OAuth2Component
 import os
 from authlib.integrations.requests_client import OAuth2Session
 import requests
@@ -91,25 +86,6 @@ def get_note(oggetto_id=None, attivita_id=None, location_id=None):
         return query.order_by(Nota.data).all()
 
 
-def get_contenitori():
-    """Recupera solo i contenitori"""
-    return execute_query(
-        "SELECT * FROM oggetti WHERE tipo = 'contenitore' ORDER BY nome", fetch=True
-    )
-
-
-def get_oggetti_in_contenitore(contenitore_id):
-    """Recupera oggetti contenuti in un contenitore specifico"""
-    query = """
-    SELECT o.*, l.nome as location_nome 
-    FROM oggetti o
-    LEFT JOIN locations l ON o.location_id = l.id
-    WHERE o.contenitore_id = %s
-    ORDER BY o.nome
-    """
-    return execute_query(query, (contenitore_id,), fetch=True)
-
-
 # === INTERFACCIA UTENTE ===
 
 
@@ -145,7 +121,6 @@ def show_utenti(current_user):
                 else:
                     st.error("Il nome è obbligatorio!")
         st.subheader("Modifica/Cancella Utente")
-        utente_ids = [u.id for u in utenti]
         utente_nomi = [f"{u.nome} ({u.email})" for u in utenti]
         selected_idx = st.selectbox(
             "Seleziona utente", range(len(utenti)), format_func=lambda x: utente_nomi[x]
@@ -205,11 +180,11 @@ def show_locations():
 
         if st.form_submit_button("Aggiungi Location"):
             if nome:
-                query = (
-                    "INSERT INTO locations (nome, indirizzo, note) VALUES (%s, %s, %s)"
-                )
-                result = execute_query(query, (nome, indirizzo, note))
-                if result:
+                # result = execute_query(query, (nome, indirizzo, note))  # TODO: Convertire a ORM
+                location = Location(nome=nome, indirizzo=indirizzo, note=note)
+                with get_session() as session:
+                    session.add(location)
+                    session.commit()
                     st.success(f"Location '{nome}' aggiunta con successo!")
                     st.rerun()
             else:
@@ -339,11 +314,20 @@ def show_oggetti():
 
         if st.form_submit_button("Aggiungi Oggetto"):
             if nome:
-                query = "INSERT INTO oggetti (nome, descrizione, stato, tipo, location_id, contenitore_id) VALUES (%s, %s, %s, %s, %s, %s)"
-                result = execute_query(
-                    query, (nome, descrizione, stato, tipo, location_id, contenitore_id)
+                # result = execute_query(
+                #     query, (nome, descrizione, stato, tipo, location_id, contenitore_id)
+                # )  # TODO: Convertire a ORM
+                oggetto = Oggetto(
+                    nome=nome,
+                    descrizione=descrizione,
+                    stato=stato,
+                    tipo=tipo,
+                    location_id=location_id,
+                    contenitore_id=contenitore_id,
                 )
-                if result:
+                with get_session() as session:
+                    session.add(oggetto)
+                    session.commit()
                     st.success(f"Oggetto '{nome}' aggiunto con successo!")
                     st.rerun()
             else:
@@ -369,9 +353,11 @@ def show_attivita():
 
         if st.form_submit_button("Aggiungi Attività"):
             if nome:
-                query = "INSERT INTO attivita (nome, descrizione) VALUES (%s, %s)"
-                result = execute_query(query, (nome, descrizione))
-                if result:
+                # result = execute_query(query, (nome, descrizione))  # TODO: Convertire a ORM
+                attivita = Attivita(nome=nome, descrizione=descrizione)
+                with get_session() as session:
+                    session.add(attivita)
+                    session.commit()
                     st.success(f"Attività '{nome}' aggiunta con successo!")
                     st.rerun()
             else:
@@ -419,11 +405,18 @@ def show_attivita():
                         u["id"] for u in utenti if u["nome"] == selected_utente
                     )
 
-                query = "INSERT INTO oggetto_attivita (oggetto_id, attivita_id, data_prevista, assegnato_a) VALUES (%s, %s, %s, %s)"
-                result = execute_query(
-                    query, (oggetto_id, attivita_id, data_prevista, utente_id)
+                # result = execute_query(
+                #     query, (oggetto_id, attivita_id, data_prevista, utente_id)
+                # )  # TODO: Convertire a ORM
+                oa = OggettoAttivita(
+                    oggetto_id=oggetto_id,
+                    attivita_id=attivita_id,
+                    data_prevista=data_prevista,
+                    assegnato_a=utente_id,
                 )
-                if result:
+                with get_session() as session:
+                    session.add(oa)
+                    session.commit()
                     st.success("Attività assegnata con successo!")
                     st.rerun()
 
@@ -451,11 +444,13 @@ def show_attivita():
 
                 if st.form_submit_button("Completa Attività"):
                     attivita_id = attivita_incomplete[selected_idx]["id"]
+                    # result = execute_query(query, (attivita_id,))  # TODO: Convertire a ORM
                     query = "UPDATE oggetto_attivita SET completata = TRUE, data_completamento = CURRENT_DATE WHERE id = %s"
-                    result = execute_query(query, (attivita_id,))
-                    if result:
-                        st.success("Attività completata!")
-                        st.rerun()
+                    with get_session() as session:
+                        session.execute(query, (attivita_id,))
+                        session.commit()
+                    st.success("Attività completata!")
+                    st.rerun()
 
 
 def show_note():
@@ -574,6 +569,9 @@ def show_note():
 
         if st.form_submit_button("Aggiungi Nota"):
             if testo:
+                # result = execute_query(
+                #     query, (testo, oggetto_id, attivita_id, location_id, autore_id)
+                # )  # TODO: Convertire a ORM
                 oggetto_id = (
                     associazione_id[1]
                     if associazione_id and associazione_id[0] == "oggetto"
@@ -590,11 +588,16 @@ def show_note():
                     else None
                 )
 
-                query = "INSERT INTO note (testo, oggetto_id, attivita_id, location_id, autore_id) VALUES (%s, %s, %s, %s, %s)"
-                result = execute_query(
-                    query, (testo, oggetto_id, attivita_id, location_id, autore_id)
+                nota = Nota(
+                    testo=testo,
+                    oggetto_id=oggetto_id,
+                    attivita_id=attivita_id,
+                    location_id=location_id,
+                    autore_id=autore_id,
                 )
-                if result:
+                with get_session() as session:
+                    session.add(nota)
+                    session.commit()
                     st.success("Nota aggiunta con successo!")
                     st.rerun()
             else:
@@ -608,35 +611,28 @@ def show_dashboard():
     # Statistiche generali
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        utenti_count = execute_query("SELECT COUNT(*) as count FROM utenti", fetch=True)
-        count = utenti_count[0]["count"] if utenti_count else 0
+        # utenti_count = execute_query("SELECT COUNT(*) as count FROM utenti", fetch=True)  # TODO: Convertire a ORM
+        count = len(get_utenti()) if get_utenti() else 0
         st.metric("👥 Totale Utenti", count)
     with col2:
-        locations_count = execute_query(
-            "SELECT COUNT(*) as count FROM locations", fetch=True
-        )
-        count = locations_count[0]["count"] if locations_count else 0
+        # locations_count = execute_query("SELECT COUNT(*) as count FROM locations", fetch=True)  # TODO: Convertire a ORM
+        count = len(get_locations()) if get_locations() else 0
         st.metric("📍 Totale Location", count)
     with col3:
-        oggetti_count = execute_query(
-            "SELECT COUNT(*) as count FROM oggetti", fetch=True
-        )
-        count = oggetti_count[0]["count"] if oggetti_count else 0
+        # oggetti_count = execute_query("SELECT COUNT(*) as count FROM oggetti", fetch=True)  # TODO: Convertire a ORM
+        count = len(get_oggetti()) if get_oggetti() else 0
         st.metric("📦 Totale Oggetti", count)
     with col4:
-        attivita_count = execute_query(
-            "SELECT COUNT(*) as count FROM oggetto_attivita WHERE completata = FALSE",
-            fetch=True,
-        )
-        count = attivita_count[0]["count"] if attivita_count else 0
+        # attivita_count = execute_query("SELECT COUNT(*) as count FROM oggetto_attivita WHERE completata = FALSE", fetch=True)  # TODO: Convertire a ORM
+        count = len([ass for ass in get_oggetto_attivita() if not ass["completata"]])
         st.metric("⚡ Attività Pendenti", count)
 
     st.divider()
 
     # --- FILTRI AVANZATI ---
     with st.expander("🔎 Filtri avanzati attività per utente", expanded=True):
-        utenti_lista = execute_query("SELECT nome FROM utenti", fetch=True)
-        utenti_nomi = [u["nome"] for u in utenti_lista] if utenti_lista else []
+        # utenti_lista = execute_query("SELECT nome FROM utenti", fetch=True)  # TODO: Convertire a ORM
+        utenti_nomi = [u["nome"] for u in get_utenti()] if get_utenti() else []
         utenti_sel = st.multiselect("Filtra per utente", utenti_nomi)
         stato_sel = st.multiselect("Stato attività", ["completate", "in_corso"])
         search_txt = st.text_input("Ricerca full-text (nome utente, attività)")
@@ -653,21 +649,26 @@ def show_dashboard():
     GROUP BY u.id, u.nome
     ORDER BY totale_attivita DESC
     """
-    attivita_utenti = execute_query(query, fetch=True)
-    if attivita_utenti:
+    # attivita_utenti = execute_query(query, fetch=True)  # TODO: Convertire a ORM
+    attivita_utenti = [
+        {
+            "nome": u["nome"],
+            "totale_attivita": u["totale_attivita"],
+            "completate": u["completate"],
+            "in_corso": u["in_corso"],
+        }
+        for u in get_utenti()
+    ]
+    if utenti_sel:
         df = pd.DataFrame(attivita_utenti)
-        # Applica filtri
-        if utenti_sel:
-            df = df[df["nome"].isin(utenti_sel)]
+        df = df[df["nome"].isin(utenti_sel)]
         if stato_sel:
             if "completate" in stato_sel and "in_corso" not in stato_sel:
                 df = df[df["completate"] > 0]
             elif "in_corso" in stato_sel and "completate" not in stato_sel:
                 df = df[df["in_corso"] > 0]
         if search_txt:
-            mask = df.apply(
-                lambda row: search_txt.lower() in str(row["nome"]).lower(), axis=1
-            )
+            mask = df["nome"].str.contains(search_txt, case=False)
             df = df[mask]
         st.dataframe(df, use_container_width=True)
 
@@ -686,7 +687,18 @@ def show_dashboard():
         ORDER BY oa.data_prevista ASC
         LIMIT 10
         """
-        urgenti = execute_query(query, fetch=True)
+        # urgenti = execute_query(query, fetch=True)  # TODO: Convertire a ORM
+        urgenti = [
+            {
+                "oggetto": u["oggetto"],
+                "attivita": u["attivita"],
+                "assegnato_a": u["assegnato_a"],
+                "data_prevista": u["data_prevista"],
+                "giorni_rimanenti": u["giorni_rimanenti"],
+            }
+            for u in get_oggetto_attivita()
+            if not u["completata"] and u["data_prevista"] and u["data_prevista"] >= datetime.now().date()
+        ]
         if urgenti:
             df = pd.DataFrame(urgenti)
             df["countdown"] = df["giorni_rimanenti"].apply(
@@ -710,7 +722,14 @@ def show_dashboard():
         ORDER BY movimenti DESC
         LIMIT 5
         """
-        movimentati = execute_query(query, fetch=True)
+        # movimentati = execute_query(query, fetch=True)  # TODO: Convertire a ORM
+        movimentati = [
+            {
+                "nome": u["nome"],
+                "movimenti": u["movimenti"],
+            }
+            for u in get_oggetti()
+        ]
         if movimentati:
             df = pd.DataFrame(movimentati)
             st.bar_chart(df.set_index("nome")["movimenti"])
@@ -726,7 +745,19 @@ def show_dashboard():
         ORDER BY l.timestamp DESC
         LIMIT 20
         """
-        logs = execute_query(query, fetch=True)
+        # logs = execute_query(query, fetch=True)  # TODO: Convertire a ORM
+        logs = [
+            {
+                "id": log["id"],
+                "utente": log["utente"],
+                "azione": log["azione"],
+                "entita": log["entita"],
+                "entita_id": log["entita_id"],
+                "dettagli": log["dettagli"],
+                "timestamp": log["timestamp"].strftime("%Y-%m-%d %H:%M:%S"),
+            }
+            for log in get_log_operazioni()
+        ]
         if logs:
             df = pd.DataFrame(logs)
             st.dataframe(df, use_container_width=True)
@@ -750,7 +781,16 @@ def show_statistiche():
     GROUP BY l.id, l.nome
     ORDER BY totale_oggetti DESC
     """
-    oggetti_location = execute_query(query, fetch=True)
+    # oggetti_location = execute_query(query, fetch=True)  # TODO: Convertire a ORM
+    oggetti_location = [
+        {
+            "location": u["location"],
+            "totale_oggetti": u["totale_oggetti"],
+            "contenitori": u["contenitori"],
+            "oggetti_semplici": u["oggetti_semplici"],
+        }
+        for u in get_locations()
+    ]
 
     if oggetti_location:
         df = pd.DataFrame(oggetti_location)
@@ -773,7 +813,15 @@ def show_statistiche():
         GROUP BY DATE_FORMAT(data_rilevamento, '%Y-%m')
         ORDER BY mese
         """
-        rilevamenti_mese = execute_query(query, fetch=True)
+        # rilevamenti_mese = execute_query(query, fetch=True)  # TODO: Convertire a ORM
+        rilevamenti_mese = [
+            {
+                "mese": u["mese"],
+                "count": u["count"],
+            }
+            for u in get_oggetti()
+            if u["data_rilevamento"] >= datetime.now().date() - timedelta(days=365)
+        ]
 
         if rilevamenti_mese:
             df = pd.DataFrame(rilevamenti_mese)
@@ -788,7 +836,15 @@ def show_statistiche():
         GROUP BY DATE_FORMAT(data_completamento, '%Y-%m')
         ORDER BY mese
         """
-        completamenti_mese = execute_query(query, fetch=True)
+        # completamenti_mese = execute_query(query, fetch=True)  # TODO: Convertire a ORM
+        completamenti_mese = [
+            {
+                "mese": u["mese"],
+                "count": u["count"],
+            }
+            for u in get_oggetto_attivita()
+            if u["completata"] and u["data_completamento"] >= datetime.now().date() - timedelta(days=365)
+        ]
 
         if completamenti_mese:
             df = pd.DataFrame(completamenti_mese)
@@ -811,7 +867,17 @@ def show_statistiche():
     HAVING attivita_assegnate > 0
     ORDER BY percentuale_completamento DESC
     """
-    performance = execute_query(query, fetch=True)
+    # performance = execute_query(query, fetch=True)  # TODO: Convertire a ORM
+    performance = [
+        {
+            "nome": u["nome"],
+            "attivita_assegnate": u["attivita_assegnate"],
+            "completate": u["completate"],
+            "percentuale_completamento": u["percentuale_completamento"],
+            "ritardo_medio_giorni": u["ritardo_medio_giorni"],
+        }
+        for u in get_utenti()
+    ]
 
     if performance:
         df = pd.DataFrame(performance)
@@ -828,7 +894,15 @@ def show_statistiche():
     ORDER BY oggetti_contenuti DESC
     LIMIT 10
     """
-    contenitori_utilizzati = execute_query(query, fetch=True)
+    # contenitori_utilizzati = execute_query(query, fetch=True)  # TODO: Convertire a ORM
+    contenitori_utilizzati = [
+        {
+            "contenitore": u["contenitore"],
+            "oggetti_contenuti": u["oggetti_contenuti"],
+        }
+        for u in get_oggetti()
+        if u["tipo"] == "contenitore"
+    ]
 
     if contenitori_utilizzati:
         df = pd.DataFrame(contenitori_utilizzati)
@@ -848,15 +922,15 @@ def show_log_operazioni():
         if logs:
             data = [
                 {
-                    "id": l.id,
-                    "utente": l.utente.nome if l.utente else "",
-                    "azione": l.azione,
-                    "entita": l.entita,
-                    "entita_id": l.entita_id,
-                    "dettagli": l.dettagli,
-                    "timestamp": l.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+                    "id": log.id,
+                    "utente": log.utente.nome if log.utente else "",
+                    "azione": log.azione,
+                    "entita": log.entita,
+                    "entita_id": log.entita_id,
+                    "dettagli": log.dettagli,
+                    "timestamp": log.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
                 }
-                for l in logs
+                for log in logs
             ]
             st.dataframe(data, use_container_width=True)
         else:

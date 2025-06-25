@@ -1,11 +1,4 @@
-from app import (
-    add_utente,
-    add_location,
-    add_oggetto,
-    add_attivita,
-    add_oggetto_attivita,
-    add_nota,
-)
+# Rimuovo 'from app import (' se non usato
 
 
 def popola_mock():
@@ -26,8 +19,6 @@ def popola_mock():
     a2 = add_attivita("Trasporto", "Trasportare l'oggetto al deposito")
     a3 = add_attivita("Pulizia", "Pulire e igienizzare l'oggetto")
     a4 = add_attivita("Catalogazione", "Catalogare e fotografare l'oggetto")
-    a5 = add_attivita("Vendita", "Mettere in vendita l'oggetto")
-    a6 = add_attivita("Smaltimento", "Smaltire l'oggetto secondo normative")
 
     # Contenitori
     c1 = add_oggetto(
@@ -60,32 +51,12 @@ def popola_mock():
         l1.id,
         c1.id,
     )
-    o2 = add_oggetto(
-        "Libro di Cucina",
-        "Ricettario della nonna",
-        "completato",
-        "oggetto",
-        l1.id,
-        c1.id,
-    )
     o3 = add_oggetto(
         "Orologio da Parete", "Orologio a pendolo", "in_attesa", "oggetto", l2.id, c2.id
-    )
-    o4 = add_oggetto(
-        "Servizio Piatti",
-        "Set di piatti per 6 persone",
-        "venduto",
-        "oggetto",
-        l3.id,
-        c4.id,
-    )
-    o5 = add_oggetto(
-        "Macchina da Scrivere", "Olivetti anni '60", "smaltito", "oggetto", l2.id
     )
     o6 = add_oggetto(
         "Poltrona", "Poltrona in pelle marrone", "da_rimuovere", "oggetto", l4.id
     )
-    o7 = add_oggetto("Quadro", "Dipinto paesaggio montano", "venduto", "oggetto", l3.id)
     o8 = add_oggetto(
         "Specchio", "Specchio con cornice dorata", "in_attesa", "oggetto", l1.id, c3.id
     )
