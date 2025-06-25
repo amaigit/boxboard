@@ -15,6 +15,8 @@ import hashlib
 from streamlit_components.crud_browser import st_crud_browser
 from streamlit_oauth import OAuth2Component
 import os
+from authlib.integrations.requests_client import OAuth2Session
+import requests
 
 # Configurazione della pagina
 st.set_page_config(
@@ -1194,6 +1196,144 @@ pannello_scelta_modalita()
 if st.session_state.get("modalita_db") == "browser":
     st.header("Gestione dati locale (modalità browser)")
     st_crud_browser()
+
+# --- CONFIG OAUTH GOOGLE ---
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
+GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
+GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
+GOOGLE_USERINFO_URL = "https://openidconnect.googleapis.com/v1/userinfo"
+GOOGLE_SCOPE = "openid email profile"
+REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:8501")
+
+# --- FUNZIONE LOGIN GOOGLE (AUTHLIB) ---
+def login_google_authlib():
+    if 'google_token' not in st.session_state:
+        if st.button('Login con Google'):
+            oauth = OAuth2Session(
+                client_id=GOOGLE_CLIENT_ID,
+                client_secret=GOOGLE_CLIENT_SECRET,
+                scope=GOOGLE_SCOPE,
+                redirect_uri=REDIRECT_URI,
+            )
+            uri, state = oauth.create_authorization_url(GOOGLE_AUTH_URL, access_type='offline', prompt='consent')
+            st.session_state['oauth_state'] = state
+            st.session_state['oauth_url'] = uri
+            st.experimental_set_query_params()
+            st.markdown(f"[Clicca qui per autenticarti con Google]({uri})")
+            st.stop()
+        return None
+    else:
+        token = st.session_state['google_token']
+        resp = requests.get(GOOGLE_USERINFO_URL, headers={'Authorization': f"Bearer {token['access_token']}"})
+        if resp.status_code == 200:
+            info = resp.json()
+            email = info.get('email')
+            nome = info.get('name')
+            if email:
+                utenti = get_utenti()
+                utente = next((u for u in utenti if u.email == email), None)
+                if not utente:
+                    with get_session() as session:
+                        nuovo = Utente(nome=nome or email.split("@")[0], email=email, ruolo="Operatore")
+                        session.add(nuovo)
+                        session.commit()
+                        utente = nuovo
+                return utente
+        return None
+
+# --- CALLBACK OAUTH2 ---
+def handle_google_callback():
+    if 'code' in st.experimental_get_query_params():
+        code = st.experimental_get_query_params()['code'][0]
+        state = st.session_state.get('oauth_state')
+        oauth = OAuth2Session(
+            client_id=GOOGLE_CLIENT_ID,
+            client_secret=GOOGLE_CLIENT_SECRET,
+            scope=GOOGLE_SCOPE,
+            redirect_uri=REDIRECT_URI,
+            state=state
+        )
+        token = oauth.fetch_token(
+            GOOGLE_TOKEN_URL,
+            code=code,
+            grant_type='authorization_code',
+            client_secret=GOOGLE_CLIENT_SECRET
+        )
+        st.session_state['google_token'] = token
+        st.experimental_set_query_params()
+
+# --- LOGIN UI ---
+st.sidebar.header("Login")
+login_method = st.sidebar.radio("Metodo di accesso", ["Classico", "Google"], horizontal=True)
+current_user = None
+if login_method == "Google":
+    handle_google_callback()
+    user_google = login_google_authlib()
+    if user_google:
+        st.sidebar.success(f"Autenticato come {user_google.nome} (Google)")
+        current_user = user_google
+        st.session_state["user_email"] = user_google.email
+        st.session_state["user_nome"] = user_google.nome
+        st.session_state["user_ruolo"] = user_google.ruolo
+elif login_method == "Classico":
+    name, authentication_status, username = authenticator.login("Login", "main")
+    if authentication_status is False:
+        st.error("Username o password errati")
+    if authentication_status is None:
+        st.warning("Inserisci username e password")
+    if authentication_status:
+        authenticator.logout("Logout", "sidebar")
+        st.sidebar.success(f"Autenticato come {name}")
+        utenti = get_utenti()
+        for u in utenti:
+            if u.email == username:
+                current_user = u
+                break
+        st.session_state["user_email"] = current_user.email
+        st.session_state["user_nome"] = current_user.nome
+        st.session_state["user_ruolo"] = current_user.ruolo
+
+# --- ROUTING SOLO SE AUTENTICATO ---
+if current_user:
+    def main_router():
+        menu_options = {
+            "🏠 Dashboard": "dashboard",
+            "👥 Utenti": "utenti", 
+            "📍 Location": "locations",
+            "📦 Oggetti": "oggetti",
+            "⚡ Attività": "attivita",
+            "📝 Note": "note",
+            "📈 Statistiche": "statistiche"
+        }
+        if current_user and current_user.ruolo == 'Coordinatore':
+            menu_options["📝 Log Operazioni"] = "log"
+        selected = st.sidebar.selectbox(
+            "🧭 Navigazione",
+            options=list(menu_options.keys()),
+            index=0
+        )
+        page = menu_options[selected]
+        if page == "utenti":
+            show_utenti(current_user)
+        elif page == "dashboard":
+            show_dashboard()
+        elif page == "locations":
+            show_locations()
+        elif page == "oggetti":
+            show_oggetti()
+        elif page == "attivita":
+            show_attivita()
+        elif page == "note":
+            show_note()
+        elif page == "statistiche":
+            show_statistiche()
+        elif page == "log":
+            show_log_operazioni()
+        st.sidebar.markdown("---")
+        st.sidebar.markdown("**Sistema Svuotacantine v1.0**")
+        st.sidebar.markdown("Gestione completa inventario")
+    main_router()
 
 if __name__ == "__main__":
     main()

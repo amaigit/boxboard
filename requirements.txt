@@ -12,4 +12,4 @@ python-jose>=3.3.0
 passlib[bcrypt]>=1.7.4
 #streamlit-component-template NON ESISTE E DA PROBLEMI
 # Dexie.js sarà usato nel frontend JS del componente custom
-streamlit-oauth-client>=0.2.4
+authlib>=1.2.0
