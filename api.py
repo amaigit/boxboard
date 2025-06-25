@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Body
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
 from jose import JWTError, jwt
@@ -43,6 +43,22 @@ class UserOut(BaseModel):
     nome: str
     email: str
     ruolo: str
+
+class UserCreate(BaseModel):
+    nome: str
+    email: str
+    ruolo: str = "Operatore"
+    password: str
+
+class UserUpdate(BaseModel):
+    nome: Optional[str] = None
+    email: Optional[str] = None
+    ruolo: Optional[str] = None
+    password: Optional[str] = None
+
+class ChangePassword(BaseModel):
+    old_password: str
+    new_password: str
 
 # --- UTILITY JWT ---
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -110,7 +126,86 @@ def healthcheck():
     """Verifica che l'API sia attiva"""
     return JSONResponse(content={"status": "ok"})
 
-# --- Qui verranno aggiunti gli endpoint CRUD ---
+# --- ENDPOINT CRUD UTENTI ---
+@app.get("/utenti", response_model=list[UserOut], tags=["Utenti"])
+def list_utenti(admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        utenti = session.query(Utente).all()
+        return [UserOut(id=u.id, nome=u.nome, email=u.email, ruolo=u.ruolo) for u in utenti]
+
+@app.get("/utenti/{utente_id}", response_model=UserOut, tags=["Utenti"])
+def get_utente(utente_id: int, admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        u = session.get(Utente, utente_id)
+        if not u:
+            raise HTTPException(404, "Utente non trovato")
+        return UserOut(id=u.id, nome=u.nome, email=u.email, ruolo=u.ruolo)
+
+@app.post("/utenti", response_model=UserOut, tags=["Utenti"])
+def create_utente(user: UserCreate, admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        if session.query(Utente).filter(Utente.email == user.email).first():
+            raise HTTPException(400, "Email già registrata")
+        hashed = get_password_hash(user.password)
+        nuovo = Utente(nome=user.nome, email=user.email, ruolo=user.ruolo, password=hashed)
+        session.add(nuovo)
+        session.commit()
+        return UserOut(id=nuovo.id, nome=nuovo.nome, email=nuovo.email, ruolo=nuovo.ruolo)
+
+@app.put("/utenti/{utente_id}", response_model=UserOut, tags=["Utenti"])
+def update_utente_api(utente_id: int, user: UserUpdate, admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        u = session.get(Utente, utente_id)
+        if not u:
+            raise HTTPException(404, "Utente non trovato")
+        if user.nome is not None:
+            u.nome = user.nome
+        if user.email is not None:
+            u.email = user.email
+        if user.ruolo is not None:
+            u.ruolo = user.ruolo
+        if user.password is not None:
+            u.password = get_password_hash(user.password)
+        session.commit()
+        return UserOut(id=u.id, nome=u.nome, email=u.email, ruolo=u.ruolo)
+
+@app.delete("/utenti/{utente_id}", tags=["Utenti"])
+def delete_utente_api(utente_id: int, admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        u = session.get(Utente, utente_id)
+        if not u:
+            raise HTTPException(404, "Utente non trovato")
+        session.delete(u)
+        session.commit()
+        return {"detail": "Utente eliminato"}
+
+# --- CAMBIO PASSWORD PERSONALE ---
+@app.post("/me/change-password", tags=["Auth"])
+def change_password(data: ChangePassword, current_user: Utente = Depends(get_current_user)):
+    if current_user.password:
+        valid = verify_password(data.old_password, current_user.password)
+    else:
+        import hashlib
+        valid = data.old_password == hashlib.sha256(current_user.email.encode()).hexdigest()
+    if not valid:
+        raise HTTPException(400, "Vecchia password errata")
+    with get_session() as session:
+        u = session.get(Utente, current_user.id)
+        u.password = get_password_hash(data.new_password)
+        session.commit()
+    return {"detail": "Password aggiornata"}
+
+# --- AGGIORNA PROFILO PERSONALE ---
+@app.put("/me", response_model=UserOut, tags=["Auth"])
+def update_me(user: UserUpdate, current_user: Utente = Depends(get_current_user)):
+    with get_session() as session:
+        u = session.get(Utente, current_user.id)
+        if user.nome is not None:
+            u.nome = user.nome
+        if user.email is not None:
+            u.email = user.email
+        session.commit()
+        return UserOut(id=u.id, nome=u.nome, email=u.email, ruolo=u.ruolo)
 
 if __name__ == "__main__":
     import uvicorn

@@ -101,10 +101,10 @@ Esporre tutte le funzionalità del sistema tramite API RESTful, in modo che ogni
 - [ ] Documentazione OpenAPI automatica
 
 #### Fase 2: Utenti
-- [ ] Endpoint CRUD utenti (solo admin può creare/modificare/cancellare)
-- [ ] Endpoint per cambiare la propria password
-- [ ] Endpoint per ottenere il proprio profilo
-- [ ] Protezione permessi su ogni endpoint
+- [x] Endpoint CRUD utenti (solo admin può creare/modificare/cancellare)
+- [x] Endpoint per cambiare la propria password
+- [x] Endpoint per ottenere il proprio profilo
+- [x] Protezione permessi su ogni endpoint
 
 #### Fase 3: Location
 - [ ] Endpoint CRUD location
