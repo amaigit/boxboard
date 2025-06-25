@@ -1,6 +1,7 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, Enum, ForeignKey, Boolean, Date
+from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 import config
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -19,4 +20,79 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 def get_session():
     """Restituisce una nuova sessione SQLAlchemy"""
-    return SessionLocal() 
+    return SessionLocal()
+
+class Utente(Base):
+    __tablename__ = 'utenti'
+    id = Column(Integer, primary_key=True)
+    nome = Column(String(255), nullable=False)
+    ruolo = Column(Enum('Operatore', 'Coordinatore', 'Altro'), default='Operatore')
+    email = Column(String(255), unique=True)
+    # relazioni
+    note = relationship('Nota', back_populates='autore')
+    oggetto_attivita = relationship('OggettoAttivita', back_populates='utente')
+
+class Location(Base):
+    __tablename__ = 'locations'
+    id = Column(Integer, primary_key=True)
+    nome = Column(String(255), nullable=False)
+    indirizzo = Column(Text)
+    note = Column(Text)
+    data_creazione = Column(DateTime, default=datetime.utcnow)
+    # relazioni
+    oggetti = relationship('Oggetto', back_populates='location')
+    note_rel = relationship('Nota', back_populates='location')
+
+class Oggetto(Base):
+    __tablename__ = 'oggetti'
+    id = Column(Integer, primary_key=True)
+    nome = Column(String(255), nullable=False)
+    descrizione = Column(Text)
+    stato = Column(Enum('da_rimuovere', 'smaltito', 'venduto', 'in_attesa', 'completato'), default='da_rimuovere')
+    tipo = Column(Enum('oggetto', 'contenitore'), default='oggetto')
+    location_id = Column(Integer, ForeignKey('locations.id'))
+    contenitore_id = Column(Integer, ForeignKey('oggetti.id'))
+    data_rilevamento = Column(DateTime, default=datetime.utcnow)
+    # relazioni
+    location = relationship('Location', back_populates='oggetti')
+    contenitore = relationship('Oggetto', remote_side=[id])
+    attivita = relationship('OggettoAttivita', back_populates='oggetto')
+    note = relationship('Nota', back_populates='oggetto')
+
+class Attivita(Base):
+    __tablename__ = 'attivita'
+    id = Column(Integer, primary_key=True)
+    nome = Column(String(255), nullable=False)
+    descrizione = Column(Text)
+    # relazioni
+    oggetto_attivita = relationship('OggettoAttivita', back_populates='attivita')
+    note = relationship('Nota', back_populates='attivita')
+
+class OggettoAttivita(Base):
+    __tablename__ = 'oggetto_attivita'
+    id = Column(Integer, primary_key=True)
+    oggetto_id = Column(Integer, ForeignKey('oggetti.id'), nullable=False)
+    attivita_id = Column(Integer, ForeignKey('attivita.id'), nullable=False)
+    completata = Column(Boolean, default=False)
+    data_prevista = Column(Date)
+    data_completamento = Column(Date)
+    assegnato_a = Column(Integer, ForeignKey('utenti.id'))
+    # relazioni
+    oggetto = relationship('Oggetto', back_populates='attivita')
+    attivita = relationship('Attivita', back_populates='oggetto_attivita')
+    utente = relationship('Utente', back_populates='oggetto_attivita')
+
+class Nota(Base):
+    __tablename__ = 'note'
+    id = Column(Integer, primary_key=True)
+    testo = Column(Text, nullable=False)
+    oggetto_id = Column(Integer, ForeignKey('oggetti.id'))
+    attivita_id = Column(Integer, ForeignKey('attivita.id'))
+    location_id = Column(Integer, ForeignKey('locations.id'))
+    autore_id = Column(Integer, ForeignKey('utenti.id'))
+    data = Column(DateTime, default=datetime.utcnow)
+    # relazioni
+    oggetto = relationship('Oggetto', back_populates='note')
+    attivita = relationship('Attivita', back_populates='note')
+    location = relationship('Location', back_populates='note_rel')
+    autore = relationship('Utente', back_populates='note') 
