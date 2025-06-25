@@ -283,10 +283,42 @@ CORS abilitato per tutte le origini (in sviluppo). In produzione si consiglia di
 - Proteggi il file `.env` e non committare mai segreti o credenziali.
 - Consulta la sezione 'Roadmap avanzata' in [PIANO_LAVORO.md](./PIANO_LAVORO.md) per ulteriori best practice.
 
-## CI/CD
+## CI/CD (Integrazione e Deploy Continui)
 
-- I test automatici vengono eseguiti su ogni push/pull request tramite GitHub Actions (workflow `ci.yml`).
-- Lo stato della build è visibile tramite badge in alto.
+BoxBoard utilizza **GitHub Actions** per automatizzare i test e garantire la qualità del codice ad ogni push o pull request.
+
+### Come funziona la pipeline
+- Il workflow si trova in `.github/workflows/ci.yml`.
+- Ad ogni push o PR su `main`, vengono eseguiti:
+  - **Installazione dipendenze** (requirements.txt)
+  - **Linting** con flake8 (verifica stile e qualità del codice Python)
+  - **Test automatici API** (`pytest test_api.py`)
+  - **Test CRUD automatici** (`python test_crud.py`)
+- Il badge di stato build/test è visibile in alto nel README.
+
+### Come abilitare i workflow GitHub
+- Per poter pushare o aggiornare i workflow (`.github/workflows/ci.yml`), il token usato deve avere il permesso `workflow`.
+- Se ricevi errori di push relativi ai workflow, aggiorna il token oppure modifica i workflow direttamente da GitHub web.
+
+### Personalizzazione e best practice
+- Puoi aggiungere badge personalizzati (coverage, lint, deploy) seguendo la documentazione di GitHub Actions.
+- In produzione, aggiungi step per:
+  - Deploy automatico (es. su server, Docker, Streamlit Cloud)
+  - Notifiche (Slack, email, Telegram)
+  - Analisi di sicurezza (Bandit, Snyk)
+- Mantieni i segreti (token, password) solo in GitHub Secrets, **mai nel codice**.
+
+### Esempio di estensione pipeline
+Per aggiungere il deploy automatico dopo i test:
+```yaml
+- name: Deploy su server
+  run: |
+    scp -r . user@server:/path/to/app
+    ssh user@server 'cd /path/to/app && docker-compose up -d'
+  if: github.ref == 'refs/heads/main' && success()
+```
+
+Consulta la documentazione ufficiale [GitHub Actions](https://docs.github.com/it/actions) per tutte le possibilità di automazione.
 
 ## Gestione segreti e variabili di ambiente
 
@@ -311,3 +343,23 @@ BoxBoard permette di sincronizzare manualmente i dati tra la modalità browser (
 - **Conflitti**: se lo stesso record è stato modificato sia su browser che su server, l'ultimo import prevale (non c'è merge automatico).
 - Si consiglia di esportare sempre una copia di backup prima di importare dati.
 - In futuro sarà possibile implementare una sincronizzazione automatica e gestione avanzata dei conflitti.
+
+## Modalità browser (CRUD locale con Dexie.js)
+
+Per abilitare la modalità solo-browser:
+
+1. Includi Dexie.js nel tuo HTML:
+   ```html
+   <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
+   ```
+2. Includi il file `streamlit_components/crud_browser_frontend.js` fornito nel repo.
+3. Collega i pulsanti HTML alle funzioni JS (esempi):
+   ```html
+   <button onclick="exportAll()">Esporta dati</button>
+   <button onclick="importAll(prompt('Incolla JSON'))">Importa dati</button>
+   <button onclick="syncUpload('oggetti', 'https://TUO_API_URL', 'TOKEN')">Sync upload oggetti</button>
+   <button onclick="syncDownload('oggetti', 'https://TUO_API_URL', 'TOKEN')">Sync download oggetti</button>
+   ```
+4. Consulta i commenti nel file JS per dettagli su CRUD, esportazione/importazione e sincronizzazione manuale.
+
+**Nota:** Nessuna installazione o build è richiesta su questo sistema. Testa la logica in ambiente browser reale.
