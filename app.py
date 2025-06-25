@@ -6,6 +6,7 @@ from datetime import datetime, date
 import warnings
 import config
 warnings.filterwarnings('ignore')
+from db import get_session, Utente, Location, Oggetto, Attivita, OggettoAttivita, Nota
 
 # Configurazione della pagina
 st.set_page_config(
@@ -187,78 +188,47 @@ def create_tables():
 
 def get_utenti():
     """Recupera tutti gli utenti"""
-    return execute_query("SELECT * FROM utenti ORDER BY nome", fetch=True)
+    with get_session() as session:
+        return session.query(Utente).order_by(Utente.nome).all()
 
 def get_locations():
     """Recupera tutte le location"""
-    return execute_query("SELECT * FROM locations ORDER BY nome", fetch=True)
+    with get_session() as session:
+        return session.query(Location).order_by(Location.nome).all()
 
 def get_oggetti(location_id=None, stato=None, tipo=None):
     """Recupera oggetti con filtri opzionali"""
-    query = """
-    SELECT o.*, l.nome as location_nome, c.nome as contenitore_nome 
-    FROM oggetti o
-    LEFT JOIN locations l ON o.location_id = l.id
-    LEFT JOIN oggetti c ON o.contenitore_id = c.id
-    WHERE 1=1
-    """
-    params = []
-    
-    if location_id:
-        query += " AND o.location_id = %s"
-        params.append(location_id)
-    if stato:
-        query += " AND o.stato = %s"
-        params.append(stato)
-    if tipo:
-        query += " AND o.tipo = %s"
-        params.append(tipo)
-    
-    query += " ORDER BY o.nome"
-    return execute_query(query, params, fetch=True)
+    with get_session() as session:
+        query = session.query(Oggetto)
+        if location_id:
+            query = query.filter(Oggetto.location_id == location_id)
+        if stato:
+            query = query.filter(Oggetto.stato == stato)
+        if tipo:
+            query = query.filter(Oggetto.tipo == tipo)
+        return query.order_by(Oggetto.nome).all()
 
 def get_attivita():
     """Recupera tutte le attività"""
-    return execute_query("SELECT * FROM attivita ORDER BY nome", fetch=True)
+    with get_session() as session:
+        return session.query(Attivita).order_by(Attivita.nome).all()
 
 def get_oggetto_attivita():
     """Recupera tutte le assegnazioni oggetto-attività"""
-    query = """
-    SELECT oa.*, o.nome as oggetto_nome, a.nome as attivita_nome, u.nome as utente_nome
-    FROM oggetto_attivita oa
-    JOIN oggetti o ON oa.oggetto_id = o.id
-    JOIN attivita a ON oa.attivita_id = a.id
-    LEFT JOIN utenti u ON oa.assegnato_a = u.id
-    ORDER BY oa.data_prevista
-    """
-    return execute_query(query, fetch=True)
+    with get_session() as session:
+        return session.query(OggettoAttivita).order_by(OggettoAttivita.data_prevista).all()
 
 def get_note(oggetto_id=None, attivita_id=None, location_id=None):
     """Recupera note con filtri opzionali"""
-    query = """
-    SELECT n.*, u.nome as autore_nome, o.nome as oggetto_nome, 
-           a.nome as attivita_nome, l.nome as location_nome
-    FROM note n
-    LEFT JOIN utenti u ON n.autore_id = u.id
-    LEFT JOIN oggetti o ON n.oggetto_id = o.id
-    LEFT JOIN attivita a ON n.attivita_id = a.id
-    LEFT JOIN locations l ON n.location_id = l.id
-    WHERE 1=1
-    """
-    params = []
-    
-    if oggetto_id:
-        query += " AND n.oggetto_id = %s"
-        params.append(oggetto_id)
-    if attivita_id:
-        query += " AND n.attivita_id = %s"
-        params.append(attivita_id)
-    if location_id:
-        query += " AND n.location_id = %s"
-        params.append(location_id)
-    
-    query += " ORDER BY n.data DESC"
-    return execute_query(query, params, fetch=True)
+    with get_session() as session:
+        query = session.query(Nota)
+        if oggetto_id:
+            query = query.filter(Nota.oggetto_id == oggetto_id)
+        if attivita_id:
+            query = query.filter(Nota.attivita_id == attivita_id)
+        if location_id:
+            query = query.filter(Nota.location_id == location_id)
+        return query.order_by(Nota.data).all()
 
 def get_contenitori():
     """Recupera solo i contenitori"""

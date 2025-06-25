@@ -18,8 +18,9 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
   - [x] Test di connessione e creazione tabelle su tutti i DB supportati tramite funzione dedicata in `db.py`.
 
 - [ ] **Refactoring del codice**
-  - Modificare tutte le funzioni di accesso al database in `app.py` per usare il nuovo modulo di astrazione.
-  - Garantire che le query siano compatibili con tutti i DB supportati (MariaDB/MySQL, PostgreSQL, SQLite).
+  - [x] Iniziato il refactoring delle funzioni CRUD in `app.py` per usare SQLAlchemy ORM (lettura dati: utenti, locations, oggetti, attività, assegnazioni, note).
+  - [ ] Completare il refactoring CRUD (inserimento, modifica, cancellazione, relazioni complesse).
+  - [ ] Garantire che le query siano compatibili con tutti i DB supportati (MariaDB/MySQL, PostgreSQL, SQLite).
 
 ---
 
