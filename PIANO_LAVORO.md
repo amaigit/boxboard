@@ -107,7 +107,7 @@ Esporre tutte le funzionalità del sistema tramite API RESTful, in modo che ogni
 - [x] Protezione permessi su ogni endpoint
 
 #### Fase 3: Location
-- [ ] Endpoint CRUD location
+- [x] Endpoint CRUD location
 - [ ] Permessi: tutti possono leggere, solo admin può modificare/cancellare
 
 #### Fase 4: Oggetti

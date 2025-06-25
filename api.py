@@ -5,7 +5,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from typing import Optional
-from db import get_session, Utente
+from db import get_session, Utente, Location
 import os
 
 # --- CONFIG ---
@@ -59,6 +59,25 @@ class UserUpdate(BaseModel):
 class ChangePassword(BaseModel):
     old_password: str
     new_password: str
+
+class LocationOut(BaseModel):
+    id: int
+    nome: str
+    indirizzo: Optional[str] = None
+    note: Optional[str] = None
+    data_creazione: datetime
+    class Config:
+        orm_mode = True
+
+class LocationCreate(BaseModel):
+    nome: str
+    indirizzo: Optional[str] = None
+    note: Optional[str] = None
+
+class LocationUpdate(BaseModel):
+    nome: Optional[str] = None
+    indirizzo: Optional[str] = None
+    note: Optional[str] = None
 
 # --- UTILITY JWT ---
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -206,6 +225,59 @@ def update_me(user: UserUpdate, current_user: Utente = Depends(get_current_user)
             u.email = user.email
         session.commit()
         return UserOut(id=u.id, nome=u.nome, email=u.email, ruolo=u.ruolo)
+
+# --- ENDPOINT CRUD LOCATION ---
+@app.get("/locations", response_model=list[LocationOut], tags=["Location"])
+def list_locations(user: Utente = Depends(get_current_user)):
+    with get_session() as session:
+        locations = session.query(Location).all()
+        return locations
+
+@app.get("/locations/{location_id}", response_model=LocationOut, tags=["Location"])
+def get_location(location_id: int, user: Utente = Depends(get_current_user)):
+    with get_session() as session:
+        loc = session.get(Location, location_id)
+        if not loc:
+            raise HTTPException(404, "Location non trovata")
+        return loc
+
+@app.post("/locations", response_model=LocationOut, tags=["Location"])
+def create_location(location: LocationCreate, admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        nuova = Location(
+            nome=location.nome,
+            indirizzo=location.indirizzo,
+            note=location.note
+        )
+        session.add(nuova)
+        session.commit()
+        session.refresh(nuova)
+        return nuova
+
+@app.put("/locations/{location_id}", response_model=LocationOut, tags=["Location"])
+def update_location(location_id: int, location: LocationUpdate, admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        loc = session.get(Location, location_id)
+        if not loc:
+            raise HTTPException(404, "Location non trovata")
+        if location.nome is not None:
+            loc.nome = location.nome
+        if location.indirizzo is not None:
+            loc.indirizzo = location.indirizzo
+        if location.note is not None:
+            loc.note = location.note
+        session.commit()
+        return loc
+
+@app.delete("/locations/{location_id}", tags=["Location"])
+def delete_location(location_id: int, admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        loc = session.get(Location, location_id)
+        if not loc:
+            raise HTTPException(404, "Location non trovata")
+        session.delete(loc)
+        session.commit()
+        return {"detail": "Location eliminata"}
 
 if __name__ == "__main__":
     import uvicorn
