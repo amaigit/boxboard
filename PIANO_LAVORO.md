@@ -42,9 +42,8 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
 ---
 
 ## Fase 3: Migliorie e manutenzione
-- [ ] **Pulizia e ottimizzazione del codice**
-  - Rimuovere codice duplicato, commenti inutili, variabili hardcoded.
-  - Migliorare la struttura delle funzioni e la leggibilità.
+- [x] **Pulizia e ottimizzazione del codice**
+  - Rimosso tutto il codice legacy, commenti inutili, variabili hardcoded e adattato tutto all'uso degli oggetti ORM.
 
 - [ ] **Estensione delle funzionalità**
   - Solo dopo aver sistemato la base, valutare nuove feature o miglioramenti (es. autenticazione, esportazione dati, API REST, ecc.).
