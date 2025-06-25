@@ -193,7 +193,7 @@ Permettere all'utente di sincronizzare i dati tra modalità browser (IndexedDB/D
 - [x] Progettazione UX per sincronizzazione manuale (pulsanti "Sincronizza con server")
 - [x] Endpoint API per import/export bulk (JSON)
 - [ ] Integrazione pulsanti di sync nel componente browser
-- [ ] Documentazione e warning su conflitti/merge
+- [x] Documentazione e warning su conflitti/merge
 - [ ] (Futuro) Progettazione logica di sincronizzazione automatica (push/pull, gestione conflitti)
 
 ---

@@ -295,3 +295,19 @@ CORS abilitato per tutte le origini (in sviluppo). In produzione si consiglia di
 - In produzione usa sistemi di secret management (GitHub Secrets, Docker secrets, variabili ambiente del server, ecc.).
 - Imposta sempre una `API_SECRET_KEY` robusta e non lasciarla mai vuota in produzione.
 - Consulta la sezione sicurezza per altre best practice.
+
+## Sincronizzazione dati browser/server
+
+BoxBoard permette di sincronizzare manualmente i dati tra la modalità browser (locale) e il backend server tramite API REST.
+
+### Come funziona
+- In modalità browser puoi esportare i dati in JSON e importarli nel server tramite gli endpoint `/import-bulk/{entita}` (solo admin).
+- Puoi anche scaricare i dati dal server tramite `/export-bulk/{entita}` e importarli nel browser.
+- I pulsanti di sincronizzazione sono disponibili nell'interfaccia browser (sezione CRUD locale).
+
+### Attenzione e limiti
+- La sincronizzazione è **manuale**: l'utente deve esportare/importare i dati quando desidera.
+- In caso di dati diversi tra browser e server, l'importazione sovrascrive/aggiorna i record con lo stesso ID.
+- **Conflitti**: se lo stesso record è stato modificato sia su browser che su server, l'ultimo import prevale (non c'è merge automatico).
+- Si consiglia di esportare sempre una copia di backup prima di importare dati.
+- In futuro sarà possibile implementare una sincronizzazione automatica e gestione avanzata dei conflitti.
