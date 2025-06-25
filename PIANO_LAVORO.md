@@ -16,6 +16,7 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
   - [x] Creato modulo `db.py` che gestisce la connessione e la sessione SQLAlchemy in base al tipo di database scelto in configurazione.
   - [x] Definiti i modelli ORM SQLAlchemy per tutte le tabelle (utenti, locations, oggetti, attivita, oggetto_attivita, note).
   - [x] Test di connessione e creazione tabelle su tutti i DB supportati tramite funzione dedicata in `db.py`.
+  - [x] Compatibilità cross-DB dei modelli ORM (Enum e relazioni) garantita.
 
 - [ ] **Refactoring del codice**
   - [x] Iniziato il refactoring delle funzioni CRUD in `app.py` per usare SQLAlchemy ORM (lettura dati: utenti, locations, oggetti, attività, assegnazioni, note).

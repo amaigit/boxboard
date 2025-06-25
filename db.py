@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, E
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 import config
 from datetime import datetime
+from sqlalchemy import Enum as SqlEnum
 
 Base = declarative_base()
 
@@ -36,7 +37,7 @@ class Utente(Base):
     __tablename__ = 'utenti'
     id = Column(Integer, primary_key=True)
     nome = Column(String(255), nullable=False)
-    ruolo = Column(Enum('Operatore', 'Coordinatore', 'Altro'), default='Operatore')
+    ruolo = Column(SqlEnum('Operatore', 'Coordinatore', 'Altro', name='ruolo_enum', native_enum=False), default='Operatore')
     email = Column(String(255), unique=True)
     # relazioni
     note = relationship('Nota', back_populates='autore')
@@ -58,8 +59,8 @@ class Oggetto(Base):
     id = Column(Integer, primary_key=True)
     nome = Column(String(255), nullable=False)
     descrizione = Column(Text)
-    stato = Column(Enum('da_rimuovere', 'smaltito', 'venduto', 'in_attesa', 'completato'), default='da_rimuovere')
-    tipo = Column(Enum('oggetto', 'contenitore'), default='oggetto')
+    stato = Column(SqlEnum('da_rimuovere', 'smaltito', 'venduto', 'in_attesa', 'completato', name='stato_enum', native_enum=False), default='da_rimuovere')
+    tipo = Column(SqlEnum('oggetto', 'contenitore', name='tipo_enum', native_enum=False), default='oggetto')
     location_id = Column(Integer, ForeignKey('locations.id'))
     contenitore_id = Column(Integer, ForeignKey('oggetti.id'))
     data_rilevamento = Column(DateTime, default=datetime.utcnow)
