@@ -1067,7 +1067,7 @@ if login_method == "Google":
 elif login_method == "Classico":
     # SOLUZIONE 1: Usa 'main' invece di 'sidebar'
     with st.sidebar:
-        name, authentication_status, username = authenticator.login("Login", "main")
+        name, authentication_status, username = authenticator.login("Login")
     
     # ALTERNATIVA - SOLUZIONE 2: Se la versione supporta ancora location='sidebar'
     # name, authentication_status, username = authenticator.login("Login", location="sidebar")
@@ -1082,7 +1082,7 @@ elif login_method == "Classico":
         st.sidebar.warning("Inserisci username e password")
     if authentication_status:
         with st.sidebar:
-            authenticator.logout("Logout", "main")
+            authenticator.logout("Logout")
         st.sidebar.success(f"Autenticato come {name}")
         
         utenti = get_utenti()
