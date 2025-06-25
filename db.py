@@ -13,20 +13,30 @@ from sqlalchemy import (
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 from datetime import datetime
 from sqlalchemy import Enum as SqlEnum
+import config
 
 Base = declarative_base()
 
-# Costruzione della stringa di connessione in base al tipo di DB
-if config.DB_TYPE == "mariadb" or config.DB_TYPE == "mysql":
-    DB_URL = f"mysql+pymysql://{config.DB_USER}:{config.DB_PASSWORD}@{config.DB_HOST}:{config.DB_PORT}/{config.DB_NAME}"
-elif config.DB_TYPE == "postgresql":
-    DB_URL = f"postgresql+psycopg2://{config.DB_USER}:{config.DB_PASSWORD}@{config.DB_HOST}:{config.DB_PORT}/{config.DB_NAME}"
-elif config.DB_TYPE == "sqlite":
-    DB_URL = f"sqlite:///{config.DB_NAME}.db"
-else:
-    raise ValueError(f"Tipo di database non supportato: {config.DB_TYPE}")
-
-engine = create_engine(DB_URL, echo=False, future=True)
+try:
+    if config.DB_TYPE == "mariadb" or config.DB_TYPE == "mysql":
+        DB_URL = f"mysql+pymysql://{config.DB_USER}:{config.DB_PASSWORD}@{config.DB_HOST}:{config.DB_PORT}/{config.DB_NAME}"
+    elif config.DB_TYPE == "postgresql":
+        DB_URL = f"postgresql+psycopg2://{config.DB_USER}:{config.DB_PASSWORD}@{config.DB_HOST}:{config.DB_PORT}/{config.DB_NAME}"
+    elif config.DB_TYPE == "sqlite":
+        DB_URL = f"sqlite:///{config.DB_NAME}.db"
+    else:
+        raise ValueError(f"Tipo di database non supportato: {config.DB_TYPE}")
+    engine = create_engine(DB_URL, echo=False, future=True)
+    # Test connessione immediata
+    with engine.connect() as conn:
+        conn.execute("SELECT 1")
+except Exception as e:
+    if getattr(config, "DB_FALLBACK_TO_SQLITE", False):
+        print(f"[WARN] Connessione al DB fallita ({e}), passo a SQLite locale!")
+        DB_URL = f"sqlite:///boxboard.db"
+        engine = create_engine(DB_URL, echo=False, future=True)
+    else:
+        raise
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 

@@ -3,9 +3,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DB_TYPE = os.getenv("DB_TYPE", "mariadb")
+# Default: SQLite
+DB_TYPE = os.getenv("DB_TYPE", "sqlite")
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = int(os.getenv("DB_PORT", 3306))
-DB_NAME = os.getenv("DB_NAME", "svuotacantine")
+DB_NAME = os.getenv("DB_NAME", "boxboard")
 DB_USER = os.getenv("DB_USER", "root")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "password")
+
+# Fallback per Streamlit Cloud (se non si riesce a connettere a MySQL/Postgres, usa SQLite)
+DB_FALLBACK_TO_SQLITE = True
