@@ -1,13 +1,17 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
+
 def st_crud_browser(key=None):
     """
     Componente custom per CRUD locale in modalità browser (IndexedDB + Dexie.js).
     Placeholder: la parte JS sarà integrata in seguito.
     """
-    st.info("Modalità browser attiva: i dati saranno salvati solo localmente nel browser tramite IndexedDB/Dexie.js.")
-    components.html("""
+    st.info(
+        "Modalità browser attiva: i dati saranno salvati solo localmente nel browser tramite IndexedDB/Dexie.js."
+    )
+    components.html(
+        """
     <div style='padding:1em; border:1px dashed #888; background:#f9f9f9;'>
         <b>CRUD locale (browser):</b><br>
         <ul>
@@ -25,12 +29,17 @@ def st_crud_browser(key=None):
         Sarà possibile gestire conflitti e merge manualmente.<br>
         Questa è una preview tecnica: la logica JS sarà integrata in seguito.</i>
     </div>
-    """, height=400, key=key)
+    """,
+        height=400,
+        key=key,
+    )
 
-    st.markdown("""
+    st.markdown(
+        """
     **Come integrare la logica JS:**
     - Includi Dexie.js: `<script src='https://unpkg.com/dexie@3.2.4/dist/dexie.min.js'></script>`
     - Includi il file `crud_browser_frontend.js` fornito nel repo.
     - Collega i pulsanti HTML alle funzioni JS (es: `onclick='exportAll()'`, `onclick='syncUpload(...)'`).
     - Consulta il README e i commenti nel file JS per dettagli.
-    """) 
+    """
+    )

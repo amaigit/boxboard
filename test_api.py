@@ -3,6 +3,7 @@ from httpx import AsyncClient
 from api import app
 import asyncio
 
+
 @pytest.mark.asyncio
 async def test_healthcheck():
     async with AsyncClient(app=app, base_url="http://test") as ac:
@@ -10,20 +11,31 @@ async def test_healthcheck():
         assert resp.status_code == 200
         assert resp.json()["status"] == "ok"
 
+
 @pytest.mark.asyncio
 async def test_login_and_crud():
     async with AsyncClient(app=app, base_url="http://test") as ac:
         # Crea utente admin di test (se non esiste)
         # NB: in un test reale, dovresti popolare il DB di test o mockare
         from db import get_session, Utente
+
         with get_session() as session:
-            admin = session.query(Utente).filter(Utente.email == "admin@test.com").first()
+            admin = (
+                session.query(Utente).filter(Utente.email == "admin@test.com").first()
+            )
             if not admin:
-                admin = Utente(nome="AdminTest", email="admin@test.com", ruolo="Coordinatore", password=None)
+                admin = Utente(
+                    nome="AdminTest",
+                    email="admin@test.com",
+                    ruolo="Coordinatore",
+                    password=None,
+                )
                 session.add(admin)
                 session.commit()
         # Login
-        resp = await ac.post("/login", data={"username": "admin@test.com", "password": "admin@test.com"})
+        resp = await ac.post(
+            "/login", data={"username": "admin@test.com", "password": "admin@test.com"}
+        )
         assert resp.status_code == 200
         token = resp.json()["access_token"]
         headers = {"Authorization": f"Bearer {token}"}
@@ -62,4 +74,4 @@ async def test_login_and_crud():
         await ac.delete(f"/note/{nota_id}", headers=headers)
         await ac.delete(f"/attivita/{att_id}", headers=headers)
         await ac.delete(f"/oggetti/{obj_id}", headers=headers)
-        await ac.delete(f"/locations/{loc_id}", headers=headers) 
+        await ac.delete(f"/locations/{loc_id}", headers=headers)

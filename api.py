@@ -1,4 +1,13 @@
-from fastapi import FastAPI, Depends, HTTPException, status, Body, Query, UploadFile, File
+from fastapi import (
+    FastAPI,
+    Depends,
+    HTTPException,
+    status,
+    Body,
+    Query,
+    UploadFile,
+    File,
+)
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse, StreamingResponse
 from jose import JWTError, jwt
@@ -33,11 +42,14 @@ app.add_middleware(
 # --- Password hashing ---
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
+
 def get_password_hash(password):
     return pwd_context.hash(password)
+
 
 # --- OAuth2 ---
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
@@ -45,12 +57,15 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 # --- MODELLI ---
 from pydantic import BaseModel
 
+
 class Token(BaseModel):
     access_token: str
     token_type: str
 
+
 class TokenData(BaseModel):
     email: Optional[str] = None
+
 
 class UserOut(BaseModel):
     id: int
@@ -58,11 +73,13 @@ class UserOut(BaseModel):
     email: str
     ruolo: str
 
+
 class UserCreate(BaseModel):
     nome: str
     email: str
     ruolo: str = "Operatore"
     password: str
+
 
 class UserUpdate(BaseModel):
     nome: Optional[str] = None
@@ -70,9 +87,11 @@ class UserUpdate(BaseModel):
     ruolo: Optional[str] = None
     password: Optional[str] = None
 
+
 class ChangePassword(BaseModel):
     old_password: str
     new_password: str
+
 
 class LocationOut(BaseModel):
     id: int
@@ -80,18 +99,22 @@ class LocationOut(BaseModel):
     indirizzo: Optional[str] = None
     note: Optional[str] = None
     data_creazione: datetime
+
     class Config:
         orm_mode = True
+
 
 class LocationCreate(BaseModel):
     nome: str
     indirizzo: Optional[str] = None
     note: Optional[str] = None
 
+
 class LocationUpdate(BaseModel):
     nome: Optional[str] = None
     indirizzo: Optional[str] = None
     note: Optional[str] = None
+
 
 class OggettoOut(BaseModel):
     id: int
@@ -102,8 +125,10 @@ class OggettoOut(BaseModel):
     location_id: Optional[int] = None
     contenitore_id: Optional[int] = None
     data_rilevamento: datetime
+
     class Config:
         orm_mode = True
+
 
 class OggettoCreate(BaseModel):
     nome: str
@@ -114,6 +139,7 @@ class OggettoCreate(BaseModel):
     contenitore_id: Optional[int] = None
     data_rilevamento: Optional[datetime] = None
 
+
 class OggettoUpdate(BaseModel):
     nome: Optional[str] = None
     descrizione: Optional[str] = None
@@ -123,20 +149,25 @@ class OggettoUpdate(BaseModel):
     contenitore_id: Optional[int] = None
     data_rilevamento: Optional[datetime] = None
 
+
 class AttivitaOut(BaseModel):
     id: int
     nome: str
     descrizione: Optional[str] = None
+
     class Config:
         orm_mode = True
+
 
 class AttivitaCreate(BaseModel):
     nome: str
     descrizione: Optional[str] = None
 
+
 class AttivitaUpdate(BaseModel):
     nome: Optional[str] = None
     descrizione: Optional[str] = None
+
 
 class NotaOut(BaseModel):
     id: int
@@ -146,8 +177,10 @@ class NotaOut(BaseModel):
     location_id: Optional[int] = None
     autore_id: Optional[int] = None
     data: datetime
+
     class Config:
         orm_mode = True
+
 
 class NotaCreate(BaseModel):
     testo: str
@@ -157,6 +190,7 @@ class NotaCreate(BaseModel):
     autore_id: Optional[int] = None
     data: Optional[datetime] = None
 
+
 class NotaUpdate(BaseModel):
     testo: Optional[str] = None
     oggetto_id: Optional[int] = None
@@ -164,6 +198,7 @@ class NotaUpdate(BaseModel):
     location_id: Optional[int] = None
     autore_id: Optional[int] = None
     data: Optional[datetime] = None
+
 
 class LogOperazioneOut(BaseModel):
     id: int
@@ -173,20 +208,26 @@ class LogOperazioneOut(BaseModel):
     entita_id: Optional[int] = None
     dettagli: Optional[str] = None
     timestamp: datetime
+
     class Config:
         orm_mode = True
+
 
 # --- UTILITY JWT ---
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    expire = datetime.utcnow() + (
+        expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+
 def get_user_by_email(email: str):
     with get_session() as session:
         return session.query(Utente).filter(Utente.email == email).first()
+
 
 # --- AUTENTICAZIONE ---
 @app.post("/login", response_model=Token, tags=["Auth"])
@@ -199,11 +240,13 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
         valid = verify_password(form_data.password, user.password)
     else:
         import hashlib
+
         valid = form_data.password == hashlib.sha256(user.email.encode()).hexdigest()
     if not valid:
         raise HTTPException(status_code=400, detail="Email o password non validi")
     access_token = create_access_token(data={"sub": user.email, "ruolo": user.ruolo})
     return {"access_token": access_token, "token_type": "bearer"}
+
 
 # --- DIPENDENZA: utente autenticato ---
 def get_current_user(token: str = Depends(oauth2_scheme)):
@@ -225,16 +268,24 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
     return user
 
+
 # --- DIPENDENZA: solo admin ---
 def require_admin(user: Utente = Depends(get_current_user)):
     if user.ruolo != "Coordinatore":
         raise HTTPException(status_code=403, detail="Permesso negato: solo admin")
     return user
 
+
 # --- ENDPOINT PROFILO ---
 @app.get("/me", response_model=UserOut, tags=["Auth"])
 def read_users_me(current_user: Utente = Depends(get_current_user)):
-    return UserOut(id=current_user.id, nome=current_user.nome, email=current_user.email, ruolo=current_user.ruolo)
+    return UserOut(
+        id=current_user.id,
+        nome=current_user.nome,
+        email=current_user.email,
+        ruolo=current_user.ruolo,
+    )
+
 
 # --- Healthcheck ---
 @app.get("/health", tags=["Health"])
@@ -242,12 +293,16 @@ def healthcheck():
     """Verifica che l'API sia attiva"""
     return JSONResponse(content={"status": "ok"})
 
+
 # --- ENDPOINT CRUD UTENTI ---
 @app.get("/utenti", response_model=list[UserOut], tags=["Utenti"])
 def list_utenti(admin: Utente = Depends(require_admin)):
     with get_session() as session:
         utenti = session.query(Utente).all()
-        return [UserOut(id=u.id, nome=u.nome, email=u.email, ruolo=u.ruolo) for u in utenti]
+        return [
+            UserOut(id=u.id, nome=u.nome, email=u.email, ruolo=u.ruolo) for u in utenti
+        ]
+
 
 @app.get("/utenti/{utente_id}", response_model=UserOut, tags=["Utenti"])
 def get_utente(utente_id: int, admin: Utente = Depends(require_admin)):
@@ -257,19 +312,27 @@ def get_utente(utente_id: int, admin: Utente = Depends(require_admin)):
             raise HTTPException(404, "Utente non trovato")
         return UserOut(id=u.id, nome=u.nome, email=u.email, ruolo=u.ruolo)
 
+
 @app.post("/utenti", response_model=UserOut, tags=["Utenti"])
 def create_utente(user: UserCreate, admin: Utente = Depends(require_admin)):
     with get_session() as session:
         if session.query(Utente).filter(Utente.email == user.email).first():
             raise HTTPException(400, "Email già registrata")
         hashed = get_password_hash(user.password)
-        nuovo = Utente(nome=user.nome, email=user.email, ruolo=user.ruolo, password=hashed)
+        nuovo = Utente(
+            nome=user.nome, email=user.email, ruolo=user.ruolo, password=hashed
+        )
         session.add(nuovo)
         session.commit()
-        return UserOut(id=nuovo.id, nome=nuovo.nome, email=nuovo.email, ruolo=nuovo.ruolo)
+        return UserOut(
+            id=nuovo.id, nome=nuovo.nome, email=nuovo.email, ruolo=nuovo.ruolo
+        )
+
 
 @app.put("/utenti/{utente_id}", response_model=UserOut, tags=["Utenti"])
-def update_utente_api(utente_id: int, user: UserUpdate, admin: Utente = Depends(require_admin)):
+def update_utente_api(
+    utente_id: int, user: UserUpdate, admin: Utente = Depends(require_admin)
+):
     with get_session() as session:
         u = session.get(Utente, utente_id)
         if not u:
@@ -285,6 +348,7 @@ def update_utente_api(utente_id: int, user: UserUpdate, admin: Utente = Depends(
         session.commit()
         return UserOut(id=u.id, nome=u.nome, email=u.email, ruolo=u.ruolo)
 
+
 @app.delete("/utenti/{utente_id}", tags=["Utenti"])
 def delete_utente_api(utente_id: int, admin: Utente = Depends(require_admin)):
     with get_session() as session:
@@ -295,14 +359,20 @@ def delete_utente_api(utente_id: int, admin: Utente = Depends(require_admin)):
         session.commit()
         return {"detail": "Utente eliminato"}
 
+
 # --- CAMBIO PASSWORD PERSONALE ---
 @app.post("/me/change-password", tags=["Auth"])
-def change_password(data: ChangePassword, current_user: Utente = Depends(get_current_user)):
+def change_password(
+    data: ChangePassword, current_user: Utente = Depends(get_current_user)
+):
     if current_user.password:
         valid = verify_password(data.old_password, current_user.password)
     else:
         import hashlib
-        valid = data.old_password == hashlib.sha256(current_user.email.encode()).hexdigest()
+
+        valid = (
+            data.old_password == hashlib.sha256(current_user.email.encode()).hexdigest()
+        )
     if not valid:
         raise HTTPException(400, "Vecchia password errata")
     with get_session() as session:
@@ -310,6 +380,7 @@ def change_password(data: ChangePassword, current_user: Utente = Depends(get_cur
         u.password = get_password_hash(data.new_password)
         session.commit()
     return {"detail": "Password aggiornata"}
+
 
 # --- AGGIORNA PROFILO PERSONALE ---
 @app.put("/me", response_model=UserOut, tags=["Auth"])
@@ -323,12 +394,14 @@ def update_me(user: UserUpdate, current_user: Utente = Depends(get_current_user)
         session.commit()
         return UserOut(id=u.id, nome=u.nome, email=u.email, ruolo=u.ruolo)
 
+
 # --- ENDPOINT CRUD LOCATION ---
 @app.get("/locations", response_model=list[LocationOut], tags=["Location"])
 def list_locations(user: Utente = Depends(get_current_user)):
     with get_session() as session:
         locations = session.query(Location).all()
         return locations
+
 
 @app.get("/locations/{location_id}", response_model=LocationOut, tags=["Location"])
 def get_location(location_id: int, user: Utente = Depends(get_current_user)):
@@ -338,21 +411,23 @@ def get_location(location_id: int, user: Utente = Depends(get_current_user)):
             raise HTTPException(404, "Location non trovata")
         return loc
 
+
 @app.post("/locations", response_model=LocationOut, tags=["Location"])
 def create_location(location: LocationCreate, admin: Utente = Depends(require_admin)):
     with get_session() as session:
         nuova = Location(
-            nome=location.nome,
-            indirizzo=location.indirizzo,
-            note=location.note
+            nome=location.nome, indirizzo=location.indirizzo, note=location.note
         )
         session.add(nuova)
         session.commit()
         session.refresh(nuova)
         return nuova
 
+
 @app.put("/locations/{location_id}", response_model=LocationOut, tags=["Location"])
-def update_location(location_id: int, location: LocationUpdate, admin: Utente = Depends(require_admin)):
+def update_location(
+    location_id: int, location: LocationUpdate, admin: Utente = Depends(require_admin)
+):
     with get_session() as session:
         loc = session.get(Location, location_id)
         if not loc:
@@ -366,6 +441,7 @@ def update_location(location_id: int, location: LocationUpdate, admin: Utente = 
         session.commit()
         return loc
 
+
 @app.delete("/locations/{location_id}", tags=["Location"])
 def delete_location(location_id: int, admin: Utente = Depends(require_admin)):
     with get_session() as session:
@@ -376,12 +452,14 @@ def delete_location(location_id: int, admin: Utente = Depends(require_admin)):
         session.commit()
         return {"detail": "Location eliminata"}
 
+
 # --- ENDPOINT CRUD OGGETTI ---
 @app.get("/oggetti", response_model=list[OggettoOut], tags=["Oggetti"])
 def list_oggetti(user: Utente = Depends(get_current_user)):
     with get_session() as session:
         oggetti = session.query(Oggetto).all()
         return oggetti
+
 
 @app.get("/oggetti/{oggetto_id}", response_model=OggettoOut, tags=["Oggetti"])
 def get_oggetto(oggetto_id: int, user: Utente = Depends(get_current_user)):
@@ -391,25 +469,29 @@ def get_oggetto(oggetto_id: int, user: Utente = Depends(get_current_user)):
             raise HTTPException(404, "Oggetto non trovato")
         return obj
 
+
 @app.post("/oggetti", response_model=OggettoOut, tags=["Oggetti"])
 def create_oggetto(oggetto: OggettoCreate, admin: Utente = Depends(require_admin)):
     with get_session() as session:
         nuovo = Oggetto(
             nome=oggetto.nome,
             descrizione=oggetto.descrizione,
-            stato=oggetto.stato or 'da_rimuovere',
-            tipo=oggetto.tipo or 'oggetto',
+            stato=oggetto.stato or "da_rimuovere",
+            tipo=oggetto.tipo or "oggetto",
             location_id=oggetto.location_id,
             contenitore_id=oggetto.contenitore_id,
-            data_rilevamento=oggetto.data_rilevamento or datetime.utcnow()
+            data_rilevamento=oggetto.data_rilevamento or datetime.utcnow(),
         )
         session.add(nuovo)
         session.commit()
         session.refresh(nuovo)
         return nuovo
 
+
 @app.put("/oggetti/{oggetto_id}", response_model=OggettoOut, tags=["Oggetti"])
-def update_oggetto(oggetto_id: int, oggetto: OggettoUpdate, admin: Utente = Depends(require_admin)):
+def update_oggetto(
+    oggetto_id: int, oggetto: OggettoUpdate, admin: Utente = Depends(require_admin)
+):
     with get_session() as session:
         obj = session.get(Oggetto, oggetto_id)
         if not obj:
@@ -431,6 +513,7 @@ def update_oggetto(oggetto_id: int, oggetto: OggettoUpdate, admin: Utente = Depe
         session.commit()
         return obj
 
+
 @app.delete("/oggetti/{oggetto_id}", tags=["Oggetti"])
 def delete_oggetto(oggetto_id: int, admin: Utente = Depends(require_admin)):
     with get_session() as session:
@@ -441,12 +524,14 @@ def delete_oggetto(oggetto_id: int, admin: Utente = Depends(require_admin)):
         session.commit()
         return {"detail": "Oggetto eliminato"}
 
+
 # --- ENDPOINT CRUD ATTIVITA ---
 @app.get("/attivita", response_model=list[AttivitaOut], tags=["Attivita"])
 def list_attivita(user: Utente = Depends(get_current_user)):
     with get_session() as session:
         attivita = session.query(Attivita).all()
         return attivita
+
 
 @app.get("/attivita/{attivita_id}", response_model=AttivitaOut, tags=["Attivita"])
 def get_attivita(attivita_id: int, user: Utente = Depends(get_current_user)):
@@ -456,20 +541,21 @@ def get_attivita(attivita_id: int, user: Utente = Depends(get_current_user)):
             raise HTTPException(404, "Attività non trovata")
         return att
 
+
 @app.post("/attivita", response_model=AttivitaOut, tags=["Attivita"])
 def create_attivita(attivita: AttivitaCreate, admin: Utente = Depends(require_admin)):
     with get_session() as session:
-        nuova = Attivita(
-            nome=attivita.nome,
-            descrizione=attivita.descrizione
-        )
+        nuova = Attivita(nome=attivita.nome, descrizione=attivita.descrizione)
         session.add(nuova)
         session.commit()
         session.refresh(nuova)
         return nuova
 
+
 @app.put("/attivita/{attivita_id}", response_model=AttivitaOut, tags=["Attivita"])
-def update_attivita(attivita_id: int, attivita: AttivitaUpdate, admin: Utente = Depends(require_admin)):
+def update_attivita(
+    attivita_id: int, attivita: AttivitaUpdate, admin: Utente = Depends(require_admin)
+):
     with get_session() as session:
         att = session.get(Attivita, attivita_id)
         if not att:
@@ -481,6 +567,7 @@ def update_attivita(attivita_id: int, attivita: AttivitaUpdate, admin: Utente = 
         session.commit()
         return att
 
+
 @app.delete("/attivita/{attivita_id}", tags=["Attivita"])
 def delete_attivita(attivita_id: int, admin: Utente = Depends(require_admin)):
     with get_session() as session:
@@ -491,12 +578,14 @@ def delete_attivita(attivita_id: int, admin: Utente = Depends(require_admin)):
         session.commit()
         return {"detail": "Attività eliminata"}
 
+
 # --- ENDPOINT CRUD NOTE ---
 @app.get("/note", response_model=list[NotaOut], tags=["Note"])
 def list_note(user: Utente = Depends(get_current_user)):
     with get_session() as session:
         note = session.query(Nota).all()
         return note
+
 
 @app.get("/note/{nota_id}", response_model=NotaOut, tags=["Note"])
 def get_nota(nota_id: int, user: Utente = Depends(get_current_user)):
@@ -505,6 +594,7 @@ def get_nota(nota_id: int, user: Utente = Depends(get_current_user)):
         if not n:
             raise HTTPException(404, "Nota non trovata")
         return n
+
 
 @app.post("/note", response_model=NotaOut, tags=["Note"])
 def create_nota(nota: NotaCreate, admin: Utente = Depends(require_admin)):
@@ -515,12 +605,13 @@ def create_nota(nota: NotaCreate, admin: Utente = Depends(require_admin)):
             attivita_id=nota.attivita_id,
             location_id=nota.location_id,
             autore_id=nota.autore_id,
-            data=nota.data or datetime.utcnow()
+            data=nota.data or datetime.utcnow(),
         )
         session.add(nuova)
         session.commit()
         session.refresh(nuova)
         return nuova
+
 
 @app.put("/note/{nota_id}", response_model=NotaOut, tags=["Note"])
 def update_nota(nota_id: int, nota: NotaUpdate, admin: Utente = Depends(require_admin)):
@@ -543,6 +634,7 @@ def update_nota(nota_id: int, nota: NotaUpdate, admin: Utente = Depends(require_
         session.commit()
         return n
 
+
 @app.delete("/note/{nota_id}", tags=["Note"])
 def delete_nota(nota_id: int, admin: Utente = Depends(require_admin)):
     with get_session() as session:
@@ -553,12 +645,16 @@ def delete_nota(nota_id: int, admin: Utente = Depends(require_admin)):
         session.commit()
         return {"detail": "Nota eliminata"}
 
+
 # --- ENDPOINT LOG OPERAZIONI (SOLO ADMIN) ---
 @app.get("/log-operazioni", response_model=list[LogOperazioneOut], tags=["Log"])
 def list_log_operazioni(admin: Utente = Depends(require_admin)):
     with get_session() as session:
-        logs = session.query(LogOperazione).order_by(LogOperazione.timestamp.desc()).all()
+        logs = (
+            session.query(LogOperazione).order_by(LogOperazione.timestamp.desc()).all()
+        )
         return logs
+
 
 # --- ENDPOINT EXPORT DATI (SOLO ADMIN) ---
 def to_csv(rows, columns):
@@ -570,8 +666,13 @@ def to_csv(rows, columns):
     output.seek(0)
     return output
 
+
 @app.get("/export/{entita}", tags=["Export"])
-def export_data(entita: str, formato: str = Query("json", enum=["json", "csv"]), admin: Utente = Depends(require_admin)):
+def export_data(
+    entita: str,
+    formato: str = Query("json", enum=["json", "csv"]),
+    admin: Utente = Depends(require_admin),
+):
     with get_session() as session:
         if entita == "utenti":
             data = session.query(Utente).all()
@@ -581,20 +682,42 @@ def export_data(entita: str, formato: str = Query("json", enum=["json", "csv"]),
             columns = ["id", "nome", "indirizzo", "note", "data_creazione"]
         elif entita == "oggetti":
             data = session.query(Oggetto).all()
-            columns = ["id", "nome", "descrizione", "stato", "tipo", "location_id", "contenitore_id", "data_rilevamento"]
+            columns = [
+                "id",
+                "nome",
+                "descrizione",
+                "stato",
+                "tipo",
+                "location_id",
+                "contenitore_id",
+                "data_rilevamento",
+            ]
         elif entita == "attivita":
             data = session.query(Attivita).all()
             columns = ["id", "nome", "descrizione"]
         elif entita == "note":
             data = session.query(Nota).all()
-            columns = ["id", "testo", "oggetto_id", "attivita_id", "location_id", "autore_id", "data"]
+            columns = [
+                "id",
+                "testo",
+                "oggetto_id",
+                "attivita_id",
+                "location_id",
+                "autore_id",
+                "data",
+            ]
         else:
             raise HTTPException(400, "Entità non supportata")
         if formato == "json":
             return [{{col: getattr(row, col) for col in columns}} for row in data]
         elif formato == "csv":
             output = to_csv(data, columns)
-            return StreamingResponse(iter([output.getvalue()]), media_type="text/csv", headers={"Content-Disposition": f"attachment; filename={entita}.csv"})
+            return StreamingResponse(
+                iter([output.getvalue()]),
+                media_type="text/csv",
+                headers={"Content-Disposition": f"attachment; filename={entita}.csv"},
+            )
+
 
 # --- ENDPOINT BULK EXPORT/IMPORT PER SYNC BROWSER/SERVER ---
 @app.get("/export-bulk/{entita}", tags=["Sync"])
@@ -608,19 +731,39 @@ def export_bulk(entita: str, admin: Utente = Depends(require_admin)):
             columns = ["id", "nome", "indirizzo", "note", "data_creazione"]
         elif entita == "oggetti":
             data = session.query(Oggetto).all()
-            columns = ["id", "nome", "descrizione", "stato", "tipo", "location_id", "contenitore_id", "data_rilevamento"]
+            columns = [
+                "id",
+                "nome",
+                "descrizione",
+                "stato",
+                "tipo",
+                "location_id",
+                "contenitore_id",
+                "data_rilevamento",
+            ]
         elif entita == "attivita":
             data = session.query(Attivita).all()
             columns = ["id", "nome", "descrizione"]
         elif entita == "note":
             data = session.query(Nota).all()
-            columns = ["id", "testo", "oggetto_id", "attivita_id", "location_id", "autore_id", "data"]
+            columns = [
+                "id",
+                "testo",
+                "oggetto_id",
+                "attivita_id",
+                "location_id",
+                "autore_id",
+                "data",
+            ]
         else:
             raise HTTPException(400, "Entità non supportata")
         return [{col: getattr(row, col) for col in columns} for row in data]
 
+
 @app.post("/import-bulk/{entita}", tags=["Sync"])
-def import_bulk(entita: str, file: UploadFile = File(...), admin: Utente = Depends(require_admin)):
+def import_bulk(
+    entita: str, file: UploadFile = File(...), admin: Utente = Depends(require_admin)
+):
     content = file.file.read()
     try:
         items = json.loads(content)
@@ -658,6 +801,8 @@ def import_bulk(entita: str, file: UploadFile = File(...), admin: Utente = Depen
         session.commit()
     return {"detail": f"Importati/aggiornati {count} record in {entita}"}
 
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True) 
+
+    uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True)

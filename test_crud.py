@@ -1,10 +1,28 @@
 from app import (
-    add_utente, get_utenti, update_utente, delete_utente,
-    add_location, get_locations, update_location, delete_location,
-    add_oggetto, get_oggetti, update_oggetto, delete_oggetto,
-    add_attivita, get_attivita, update_attivita, delete_attivita,
-    add_oggetto_attivita, get_oggetto_attivita, update_oggetto_attivita, delete_oggetto_attivita,
-    add_nota, get_note, update_nota, delete_nota
+    add_utente,
+    get_utenti,
+    update_utente,
+    delete_utente,
+    add_location,
+    get_locations,
+    update_location,
+    delete_location,
+    add_oggetto,
+    get_oggetti,
+    update_oggetto,
+    delete_oggetto,
+    add_attivita,
+    get_attivita,
+    update_attivita,
+    delete_attivita,
+    add_oggetto_attivita,
+    get_oggetto_attivita,
+    update_oggetto_attivita,
+    delete_oggetto_attivita,
+    add_nota,
+    get_note,
+    update_nota,
+    delete_nota,
 )
 
 
@@ -88,5 +106,6 @@ def test_crud():
 
     print("TUTTI I TEST CRUD SUPERATI!")
 
+
 if __name__ == "__main__":
-    test_crud() 
+    test_crud()
