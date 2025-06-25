@@ -4,6 +4,7 @@ from mysql.connector import Error
 import pandas as pd
 from datetime import datetime, date
 import warnings
+import config
 warnings.filterwarnings('ignore')
 
 # Configurazione della pagina
@@ -16,11 +17,11 @@ st.set_page_config(
 
 # Configurazione database
 DB_CONFIG = {
-    'host': 'localhost',
-    'database': 'svuotacantine',
-    'user': 'root',
-    'password': 'password',  # Cambia con la tua password
-    'port': 3306
+    'host': config.DB_HOST,
+    'database': config.DB_NAME,
+    'user': config.DB_USER,
+    'password': config.DB_PASSWORD,
+    'port': config.DB_PORT
 }
 
 @st.cache_resource
