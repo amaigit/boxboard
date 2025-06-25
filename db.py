@@ -22,6 +22,16 @@ def get_session():
     """Restituisce una nuova sessione SQLAlchemy"""
     return SessionLocal()
 
+def test_db_connection():
+    """Crea le tabelle e testa la connessione al database configurato."""
+    try:
+        Base.metadata.create_all(engine)
+        with engine.connect() as conn:
+            conn.execute("SELECT 1")
+        print(f"Connessione e creazione tabelle riuscita su {config.DB_TYPE}!")
+    except Exception as e:
+        print(f"Errore di connessione o creazione tabelle: {e}")
+
 class Utente(Base):
     __tablename__ = 'utenti'
     id = Column(Integer, primary_key=True)

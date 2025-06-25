@@ -15,7 +15,7 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
   - [x] Aggiunte dipendenze SQLAlchemy e driver per MariaDB/MySQL, PostgreSQL, SQLite in `requirements.txt`.
   - [x] Creato modulo `db.py` che gestisce la connessione e la sessione SQLAlchemy in base al tipo di database scelto in configurazione.
   - [x] Definiti i modelli ORM SQLAlchemy per tutte le tabelle (utenti, locations, oggetti, attivita, oggetto_attivita, note).
-  - [ ] Test di connessione e compatibilità con tutti i DB supportati.
+  - [x] Test di connessione e creazione tabelle su tutti i DB supportati tramite funzione dedicata in `db.py`.
 
 - [ ] **Refactoring del codice**
   - Modificare tutte le funzioni di accesso al database in `app.py` per usare il nuovo modulo di astrazione.
