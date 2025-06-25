@@ -175,4 +175,10 @@ Consentire all'utente di scegliere, tramite interfaccia Streamlit, se:
 - La scelta della modalità deve essere chiara e reversibile per l'utente.
 - L'implementazione richiede competenze sia Python/Streamlit che JavaScript/WebAssembly.
 
+- [ ] Progettazione UX pannello di scelta modalità (Streamlit) *(IN CORSO)*
+  - Il pannello sarà accessibile dalla sidebar o da una pagina dedicata.
+  - L'utente potrà selezionare tra modalità 'Server' (DB configurato) e 'Browser' (dati solo locali).
+  - Verranno mostrati vantaggi/limiti di ciascuna modalità e un avviso sulla persistenza dei dati locali.
+  - La scelta sarà reversibile e memorizzata in sessione.
+
 --- 
