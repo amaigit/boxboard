@@ -195,7 +195,7 @@ Permettere all'utente di sincronizzare i dati tra modalità browser (IndexedDB/D
 - [x] Endpoint API per import/export bulk (JSON)
 - [ ] Integrazione pulsanti di sync nel componente browser
 - [x] Documentazione e warning su conflitti/merge
-- [ ] (Futuro) Progettazione logica di sincronizzazione automatica (push/pull, gestione conflitti)
+- [x] Sincronizzazione automatica dati locali/server (Dexie.js + API REST)
 
 ---
 
@@ -219,7 +219,7 @@ Permettere all'utente di sincronizzare i dati tra modalità browser (IndexedDB/D
 - [ ] Notifiche, log avanzato, audit trail
 
 ### 4. Funzionalità avanzate browser
-- [ ] Sincronizzazione automatica dati locali/server (Dexie.js + API REST)
+- [x] Sincronizzazione automatica dati locali/server (Dexie.js + API REST)
 - [ ] UI CRUD interattiva (tabella dinamica, modali, filtri, ricerca)
 - [ ] Notifiche avanzate (successo, errore, stato online/offline, storico operazioni)
 - [ ] Commit e push su GitHub ad ogni step
