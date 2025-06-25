@@ -84,6 +84,10 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
 - [x] Widget aggiuntivi e layout responsive (st.columns, st.expander, nuovi widget)
 - [ ] Commit e push su GitHub ad ogni step
 
+### 4. Documentazione utente
+- [x] Creazione guida rapida utente in markdown (USER_GUIDE.md) pronta per GitHub Pages, con FAQ e troubleshooting
+- [x] Commit e push su GitHub
+
 ---
 
 ## Piano dettagliato sviluppo API REST
