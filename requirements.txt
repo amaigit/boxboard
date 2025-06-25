@@ -10,3 +10,5 @@ fastapi>=0.110.0
 uvicorn[standard]>=0.29.0
 python-jose>=3.3.0
 passlib[bcrypt]>=1.7.4
+streamlit-component-template
+# Dexie.js sarà usato nel frontend JS del componente custom
