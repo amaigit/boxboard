@@ -18,6 +18,7 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
   - [x] Test di connessione e creazione tabelle su tutti i DB supportati tramite funzione dedicata in `db.py`.
   - [x] Compatibilità cross-DB dei modelli ORM (Enum e relazioni) garantita.
   - [x] Script di test CRUD automatico integrato nel progetto (`test_crud.py`).
+  - [x] Verifica e validazione degli script SQL di creazione per MariaDB, PostgreSQL e SQLite.
 
 - [ ] **Refactoring del codice**
   - [x] Iniziato il refactoring delle funzioni CRUD in `app.py` per usare SQLAlchemy ORM (lettura dati: utenti, locations, oggetti, attività, assegnazioni, note).
