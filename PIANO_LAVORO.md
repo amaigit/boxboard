@@ -88,6 +88,12 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
 - [x] Creazione guida rapida utente in markdown (USER_GUIDE.md) pronta per GitHub Pages, con FAQ e troubleshooting
 - [x] Commit e push su GitHub
 
+### 5. Feature avanzate
+- [ ] Sincronizzazione automatica con gestione conflitti avanzata (browser/server)
+- [ ] Integrazione provider di autenticazione esterni (Google)
+- [ ] Aggiornamento documentazione (README, USER_GUIDE.md)
+- [ ] Commit e push su GitHub ad ogni step
+
 ---
 
 ## Piano dettagliato sviluppo API REST
@@ -236,6 +242,12 @@ Permettere all'utente di sincronizzare i dati tra modalità browser (IndexedDB/D
 ### 5. Dashboard avanzata
 - [x] Filtri e ricerca avanzata (sidebar/barra filtri, st.text_input, st.selectbox, st.multiselect, ricerca full-text)
 - [x] Widget aggiuntivi e layout responsive (st.columns, st.expander, nuovi widget)
+- [ ] Commit e push su GitHub ad ogni step
+
+### 6. Feature avanzate
+- [ ] Sincronizzazione automatica con gestione conflitti avanzata (browser/server)
+- [ ] Integrazione provider di autenticazione esterni (Google)
+- [ ] Aggiornamento documentazione (README, USER_GUIDE.md)
 - [ ] Commit e push su GitHub ad ogni step
 
 --- 
