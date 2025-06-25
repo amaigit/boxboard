@@ -128,7 +128,7 @@ Esporre tutte le funzionalità del sistema tramite API RESTful, in modo che ogni
 #### Fase 8: Extra e ottimizzazioni
 - [x] Endpoint per esportazione/importazione dati (CSV/JSON)
 - [x] Rate limiting, CORS, sicurezza
-- [ ] Test automatici delle API
+- [x] Test automatici delle API
 - [ ] Aggiornamento documentazione
 
 ### Modalità di lavoro
