@@ -81,7 +81,7 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
 
 ### 3. Dashboard avanzata
 - [x] Filtri e ricerca avanzata (sidebar/barra filtri, st.text_input, st.selectbox, st.multiselect, ricerca full-text)
-- [ ] Widget aggiuntivi e layout responsive (st.columns, st.expander, nuovi widget)
+- [x] Widget aggiuntivi e layout responsive (st.columns, st.expander, nuovi widget)
 - [ ] Commit e push su GitHub ad ogni step
 
 ---
@@ -231,7 +231,7 @@ Permettere all'utente di sincronizzare i dati tra modalità browser (IndexedDB/D
 
 ### 5. Dashboard avanzata
 - [x] Filtri e ricerca avanzata (sidebar/barra filtri, st.text_input, st.selectbox, st.multiselect, ricerca full-text)
-- [ ] Widget aggiuntivi e layout responsive (st.columns, st.expander, nuovi widget)
+- [x] Widget aggiuntivi e layout responsive (st.columns, st.expander, nuovi widget)
 - [ ] Commit e push su GitHub ad ogni step
 
 --- 

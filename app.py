@@ -455,32 +455,28 @@ def show_note():
 def show_dashboard():
     """Dashboard con panoramica del sistema"""
     st.header("📊 Dashboard")
-    
+
     # Statistiche generali
     col1, col2, col3, col4 = st.columns(4)
-    
     with col1:
         utenti_count = execute_query("SELECT COUNT(*) as count FROM utenti", fetch=True)
         count = utenti_count[0]['count'] if utenti_count else 0
         st.metric("👥 Totale Utenti", count)
-    
     with col2:
         locations_count = execute_query("SELECT COUNT(*) as count FROM locations", fetch=True)
         count = locations_count[0]['count'] if locations_count else 0
         st.metric("📍 Totale Location", count)
-    
     with col3:
         oggetti_count = execute_query("SELECT COUNT(*) as count FROM oggetti", fetch=True)
         count = oggetti_count[0]['count'] if oggetti_count else 0
         st.metric("📦 Totale Oggetti", count)
-    
     with col4:
         attivita_count = execute_query("SELECT COUNT(*) as count FROM oggetto_attivita WHERE completata = FALSE", fetch=True)
         count = attivita_count[0]['count'] if attivita_count else 0
         st.metric("⚡ Attività Pendenti", count)
-    
+
     st.divider()
-    
+
     # --- FILTRI AVANZATI ---
     with st.expander("🔎 Filtri avanzati attività per utente", expanded=True):
         utenti_lista = execute_query("SELECT nome FROM utenti", fetch=True)
@@ -516,57 +512,61 @@ def show_dashboard():
             mask = df.apply(lambda row: search_txt.lower() in str(row['nome']).lower(), axis=1)
             df = df[mask]
         st.dataframe(df, use_container_width=True)
-    
-    # Oggetti per stato
-    st.subheader("📊 Distribuzione Oggetti per Stato")
-    query = """
-    SELECT stato, COUNT(*) as count
-    FROM oggetti
-    GROUP BY stato
-    ORDER BY count DESC
-    """
-    stati_oggetti = execute_query(query, fetch=True)
-    
-    if stati_oggetti:
-        col1, col2 = st.columns(2)
-        with col1:
-            df = pd.DataFrame(stati_oggetti)
+
+    # --- WIDGET AGGIUNTIVI E RESPONSIVE ---
+    st.divider()
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("⏰ Attività Urgenti (entro 3 giorni)")
+        query = """
+        SELECT o.nome as oggetto, a.nome as attivita, u.nome as assegnato_a, oa.data_prevista, DATEDIFF(oa.data_prevista, CURDATE()) as giorni_rimanenti
+        FROM oggetto_attivita oa
+        JOIN oggetti o ON oa.oggetto_id = o.id
+        JOIN attivita a ON oa.attivita_id = a.id
+        LEFT JOIN utenti u ON oa.assegnato_a = u.id
+        WHERE oa.completata = FALSE AND oa.data_prevista IS NOT NULL AND DATEDIFF(oa.data_prevista, CURDATE()) <= 3
+        ORDER BY oa.data_prevista ASC
+        LIMIT 10
+        """
+        urgenti = execute_query(query, fetch=True)
+        if urgenti:
+            df = pd.DataFrame(urgenti)
+            df['countdown'] = df['giorni_rimanenti'].apply(lambda x: f"{x} giorni" if x >= 0 else "Scaduta")
+            st.dataframe(df[['oggetto', 'attivita', 'assegnato_a', 'data_prevista', 'countdown']], use_container_width=True)
+        else:
+            st.info("Nessuna attività urgente.")
+    with col2:
+        st.subheader("📦 Oggetti più movimentati (top 5)")
+        query = """
+        SELECT o.nome, COUNT(oa.id) as movimenti
+        FROM oggetti o
+        JOIN oggetto_attivita oa ON o.id = oa.oggetto_id
+        GROUP BY o.id, o.nome
+        ORDER BY movimenti DESC
+        LIMIT 5
+        """
+        movimentati = execute_query(query, fetch=True)
+        if movimentati:
+            df = pd.DataFrame(movimentati)
+            st.bar_chart(df.set_index('nome')['movimenti'])
             st.dataframe(df, use_container_width=True)
-        
-        with col2:
-            # Grafico a torta usando Streamlit
-            st.bar_chart(df.set_index('stato'))
-    
-    # Attività in scadenza
-    st.subheader("⏰ Attività in Scadenza")
-    query = """
-    SELECT o.nome as oggetto, a.nome as attivita, u.nome as assegnato_a, 
-           oa.data_prevista, DATEDIFF(oa.data_prevista, CURDATE()) as giorni_rimanenti
-    FROM oggetto_attivita oa
-    JOIN oggetti o ON oa.oggetto_id = o.id
-    JOIN attivita a ON oa.attivita_id = a.id
-    LEFT JOIN utenti u ON oa.assegnato_a = u.id
-    WHERE oa.completata = FALSE AND oa.data_prevista IS NOT NULL
-    ORDER BY oa.data_prevista ASC
-    LIMIT 10
-    """
-    scadenze = execute_query(query, fetch=True)
-    
-    if scadenze:
-        df = pd.DataFrame(scadenze)
-        # Colora le righe in base ai giorni rimanenti
-        def color_scadenze(row):
-            if row['giorni_rimanenti'] < 0:
-                return ['background-color: #ffebee'] * len(row)  # Rosso chiaro per scadute
-            elif row['giorni_rimanenti'] <= 3:
-                return ['background-color: #fff3e0'] * len(row)  # Arancione per urgenti
-            else:
-                return [''] * len(row)
-        
-        styled_df = df.style.apply(color_scadenze, axis=1)
-        st.dataframe(styled_df, use_container_width=True)
-    else:
-        st.info("Nessuna attività con scadenza impostata.")
+        else:
+            st.info("Nessun oggetto movimentato.")
+
+    with st.expander("📝 Storico modifiche recenti", expanded=False):
+        query = """
+        SELECT l.id, u.nome as utente, l.azione, l.entita, l.entita_id, l.dettagli, l.timestamp
+        FROM log_operazione l
+        LEFT JOIN utenti u ON l.utente_id = u.id
+        ORDER BY l.timestamp DESC
+        LIMIT 20
+        """
+        logs = execute_query(query, fetch=True)
+        if logs:
+            df = pd.DataFrame(logs)
+            st.dataframe(df, use_container_width=True)
+        else:
+            st.info("Nessuna modifica recente.")
 
 def show_statistiche():
     """Sezione statistiche avanzate"""
