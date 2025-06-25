@@ -35,8 +35,8 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
 - [x] **Aggiornamento della documentazione**
   - Aggiornato il `README.md` con istruzioni multi-database, test CRUD e aggiunta nuovi DBMS.
 
-- [ ] **Aggiunta di dati di esempio e test**
-  - Fornire una funzione/script per popolare il database con dati di esempio.
+- [x] **Aggiunta di dati di esempio e test**
+  - Funzione/script per popolare il database con dati di esempio (`mock_data.py`).
   - (Opzionale) Aggiungere test automatici per le funzioni principali.
 
 ---
