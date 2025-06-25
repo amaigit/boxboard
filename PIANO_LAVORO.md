@@ -188,7 +188,7 @@ Consentire all'utente di scegliere, tramite interfaccia Streamlit, se:
 
 ### 1. Sicurezza e best practice
 - [x] Restringere CORS in produzione (solo domini autorizzati)
-- [ ] Migliorare gestione variabili di ambiente e segreti
+- [x] Migliorare gestione variabili di ambiente e segreti
 - [x] Documentare best practice di sicurezza (README)
 - [ ] (Opzionale) Rate limiting reale sulle API
 

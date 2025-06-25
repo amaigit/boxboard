@@ -287,3 +287,11 @@ CORS abilitato per tutte le origini (in sviluppo). In produzione si consiglia di
 
 - I test automatici vengono eseguiti su ogni push/pull request tramite GitHub Actions (workflow `ci.yml`).
 - Lo stato della build è visibile tramite badge in alto.
+
+## Gestione segreti e variabili di ambiente
+
+- Usa il file `.env.example` come riferimento e **non committare mai il file `.env` reale**.
+- In sviluppo puoi usare `python-dotenv` per caricare le variabili da `.env`.
+- In produzione usa sistemi di secret management (GitHub Secrets, Docker secrets, variabili ambiente del server, ecc.).
+- Imposta sempre una `API_SECRET_KEY` robusta e non lasciarla mai vuota in produzione.
+- Consulta la sezione sicurezza per altre best practice.
