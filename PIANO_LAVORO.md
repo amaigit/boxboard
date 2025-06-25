@@ -222,6 +222,6 @@ Permettere all'utente di sincronizzare i dati tra modalità browser (IndexedDB/D
 - [x] Sincronizzazione automatica dati locali/server (Dexie.js + API REST)
 - [x] UI CRUD interattiva (tabella dinamica, modali, filtri, ricerca)
 - [x] Notifiche avanzate (successo, errore, stato online/offline, storico operazioni)
-- [ ] Commit e push su GitHub ad ogni step
+- [x] Commit e push su GitHub ad ogni step
 
 --- 
