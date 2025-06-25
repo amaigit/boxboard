@@ -16,7 +16,7 @@ from db import (
     LogOperazione,
     test_db_connection,
 )
-from crud import add_utente, add_location, add_oggetto, add_attivita, add_oggetto_attivita, add_nota, log_operazione
+from crud import add_utente, add_location, add_oggetto, add_attivita, add_oggetto_attivita, add_nota, log_operazione, update_utente, delete_utente, update_location, delete_location, update_oggetto, delete_oggetto, update_attivita, delete_attivita, update_oggetto_attivita, delete_oggetto_attivita, update_nota, delete_nota
 # --- CONTROLLO TABELLE E POPOLAMENTO AUTOMATICO ---
 try:
     with get_session() as session:

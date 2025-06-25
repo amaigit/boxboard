@@ -409,7 +409,7 @@ GOOGLE_REDIRECT_URI=http://localhost:8501
 
 Per dettagli vedi anche la [guida rapida utente](./USER_GUIDE.md#login-con-google-oauth2).
 
-## �� Automazione qualità codice
+## Automazione qualità codice
 
 - Il codice è formattato automaticamente con [Black](https://github.com/psf/black) (vedi badge in alto)
 - È consigliato usare i pre-commit hook per Black e Flake8:
@@ -427,3 +427,24 @@ pre-commit run --all-files
 ```
 
 Per configurazione vedi `.pre-commit-config.yaml`.
+
+## API CRUD Python
+
+Tutte le funzioni CRUD sono disponibili in `crud.py` e seguono questa convenzione:
+
+- `add_<entità>(...)` → Restituisce l'id dell'entità creata (int) o None in caso di errore
+- `update_<entità>(id, ...)` → Restituisce l'id dell'entità aggiornata (int) o None in caso di errore
+- `delete_<entità>(id)` → Restituisce True se la cancellazione è avvenuta, False altrimenti
+
+### Esempio:
+```python
+from crud import add_utente, update_utente, delete_utente
+
+u_id = add_utente("Mario Rossi", "Operatore", "mario@example.com")
+update_utente(u_id, nome="Mario R.")
+delete_utente(u_id)
+```
+
+Le stesse funzioni sono disponibili per: Utente, Location, Oggetto, Attivita, OggettoAttivita, Nota.
+
+Per dettagli e parametri, vedi il file `crud.py`.
