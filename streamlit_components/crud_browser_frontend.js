@@ -123,4 +123,89 @@ setInterval(() => {
 // 2. Le sync avverranno automaticamente quando torni online o ogni 2 minuti.
 
 // Utility per collegare questi metodi ai pulsanti HTML del componente custom.
-// Vedi README e doc per istruzioni di integrazione. 
+// Vedi README e doc per istruzioni di integrazione.
+
+// --- UI CRUD INTERATTIVA (ESEMPIO PER OGGETTI) ---
+
+// Renderizza una tabella HTML degli oggetti
+async function renderOggettiTable(containerId) {
+    const oggetti = await db.oggetti.toArray();
+    let html = `<input type='text' id='searchObj' placeholder='Cerca...' oninput='filterOggettiTable()'>`;
+    html += `<table border='1' id='oggettiTable'><thead><tr><th>ID</th><th>Nome</th><th>Descrizione</th><th>Stato</th><th>Azioni</th></tr></thead><tbody>`;
+    for (const o of oggetti) {
+        html += `<tr data-nome='${o.nome.toLowerCase()}'><td>${o.id}</td><td>${o.nome}</td><td>${o.descrizione||''}</td><td>${o.stato||''}</td>` +
+            `<td><button onclick='editOggetto(${o.id})'>Modifica</button> <button onclick='deleteOggettoUI(${o.id})'>Elimina</button></td></tr>`;
+    }
+    html += `</tbody></table>`;
+    html += `<button onclick='showAddOggettoModal()'>Aggiungi oggetto</button>`;
+    document.getElementById(containerId).innerHTML = html;
+}
+
+// Filtro ricerca oggetti
+function filterOggettiTable() {
+    const val = document.getElementById('searchObj').value.toLowerCase();
+    const rows = document.querySelectorAll('#oggettiTable tbody tr');
+    for (const r of rows) {
+        r.style.display = r.dataset.nome.includes(val) ? '' : 'none';
+    }
+}
+
+// Modale per aggiunta/modifica oggetto
+function showAddOggettoModal(oggetto) {
+    const isEdit = !!oggetto;
+    const id = oggetto ? oggetto.id : '';
+    const nome = oggetto ? oggetto.nome : '';
+    const descrizione = oggetto ? oggetto.descrizione : '';
+    const stato = oggetto ? oggetto.stato : '';
+    const html = `
+    <div id='modalOggetto' style='position:fixed;top:20%;left:30%;background:#fff;padding:20px;border:2px solid #888;z-index:1000;'>
+        <h3>${isEdit ? 'Modifica' : 'Aggiungi'} oggetto</h3>
+        <input id='objNome' placeholder='Nome' value='${nome}'><br>
+        <input id='objDescrizione' placeholder='Descrizione' value='${descrizione}'><br>
+        <input id='objStato' placeholder='Stato' value='${stato}'><br>
+        <button onclick='${isEdit ? `saveOggetto(${id})` : 'addOggettoUI()'}'>Salva</button>
+        <button onclick='closeOggettoModal()'>Annulla</button>
+    </div>`;
+    document.body.insertAdjacentHTML('beforeend', html);
+}
+function closeOggettoModal() {
+    const m = document.getElementById('modalOggetto');
+    if (m) m.remove();
+}
+
+// Aggiungi oggetto dalla UI
+async function addOggettoUI() {
+    const nome = document.getElementById('objNome').value;
+    const descrizione = document.getElementById('objDescrizione').value;
+    const stato = document.getElementById('objStato').value;
+    await db.oggetti.add({nome, descrizione, stato});
+    closeOggettoModal();
+    renderOggettiTable('oggettiCrudContainer');
+}
+// Modifica oggetto dalla UI
+async function saveOggetto(id) {
+    const nome = document.getElementById('objNome').value;
+    const descrizione = document.getElementById('objDescrizione').value;
+    const stato = document.getElementById('objStato').value;
+    await db.oggetti.update(id, {nome, descrizione, stato});
+    closeOggettoModal();
+    renderOggettiTable('oggettiCrudContainer');
+}
+// Elimina oggetto dalla UI
+async function deleteOggettoUI(id) {
+    if (confirm('Sei sicuro di voler eliminare questo oggetto?')) {
+        await db.oggetti.delete(id);
+        renderOggettiTable('oggettiCrudContainer');
+    }
+}
+// Modifica oggetto (apre modale)
+async function editOggetto(id) {
+    const o = await db.oggetti.get(id);
+    showAddOggettoModal(o);
+}
+
+// Per integrare:
+// 1. Aggiungi <div id='oggettiCrudContainer'></div> nel tuo HTML
+// 2. Chiama renderOggettiTable('oggettiCrudContainer') dopo il caricamento pagina
+// 3. Adatta per altre entità copiando la logica
+// ... existing code ... 

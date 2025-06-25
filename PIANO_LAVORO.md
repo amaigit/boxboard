@@ -220,7 +220,7 @@ Permettere all'utente di sincronizzare i dati tra modalità browser (IndexedDB/D
 
 ### 4. Funzionalità avanzate browser
 - [x] Sincronizzazione automatica dati locali/server (Dexie.js + API REST)
-- [ ] UI CRUD interattiva (tabella dinamica, modali, filtri, ricerca)
+- [x] UI CRUD interattiva (tabella dinamica, modali, filtri, ricerca)
 - [ ] Notifiche avanzate (successo, errore, stato online/offline, storico operazioni)
 - [ ] Commit e push su GitHub ad ogni step
 
