@@ -121,7 +121,7 @@ Esporre tutte le funzionalità del sistema tramite API RESTful, in modo che ogni
 - [ ] Permessi: tutti possono leggere, solo admin può modificare/cancellare
 
 #### Fase 6: Note
-- [ ] Endpoint CRUD note
+- [x] Endpoint CRUD note
 - [ ] Permessi: tutti possono leggere, solo admin può modificare/cancellare
 
 #### Fase 7: Log operazioni

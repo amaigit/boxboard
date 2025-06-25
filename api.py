@@ -5,7 +5,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from typing import Optional
-from db import get_session, Utente, Location, Oggetto, Attivita
+from db import get_session, Utente, Location, Oggetto, Attivita, Nota
 import os
 
 # --- CONFIG ---
@@ -123,6 +123,33 @@ class AttivitaCreate(BaseModel):
 class AttivitaUpdate(BaseModel):
     nome: Optional[str] = None
     descrizione: Optional[str] = None
+
+class NotaOut(BaseModel):
+    id: int
+    testo: str
+    oggetto_id: Optional[int] = None
+    attivita_id: Optional[int] = None
+    location_id: Optional[int] = None
+    autore_id: Optional[int] = None
+    data: datetime
+    class Config:
+        orm_mode = True
+
+class NotaCreate(BaseModel):
+    testo: str
+    oggetto_id: Optional[int] = None
+    attivita_id: Optional[int] = None
+    location_id: Optional[int] = None
+    autore_id: Optional[int] = None
+    data: Optional[datetime] = None
+
+class NotaUpdate(BaseModel):
+    testo: Optional[str] = None
+    oggetto_id: Optional[int] = None
+    attivita_id: Optional[int] = None
+    location_id: Optional[int] = None
+    autore_id: Optional[int] = None
+    data: Optional[datetime] = None
 
 # --- UTILITY JWT ---
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -438,6 +465,68 @@ def delete_attivita(attivita_id: int, admin: Utente = Depends(require_admin)):
         session.delete(att)
         session.commit()
         return {"detail": "Attività eliminata"}
+
+# --- ENDPOINT CRUD NOTE ---
+@app.get("/note", response_model=list[NotaOut], tags=["Note"])
+def list_note(user: Utente = Depends(get_current_user)):
+    with get_session() as session:
+        note = session.query(Nota).all()
+        return note
+
+@app.get("/note/{nota_id}", response_model=NotaOut, tags=["Note"])
+def get_nota(nota_id: int, user: Utente = Depends(get_current_user)):
+    with get_session() as session:
+        n = session.get(Nota, nota_id)
+        if not n:
+            raise HTTPException(404, "Nota non trovata")
+        return n
+
+@app.post("/note", response_model=NotaOut, tags=["Note"])
+def create_nota(nota: NotaCreate, admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        nuova = Nota(
+            testo=nota.testo,
+            oggetto_id=nota.oggetto_id,
+            attivita_id=nota.attivita_id,
+            location_id=nota.location_id,
+            autore_id=nota.autore_id,
+            data=nota.data or datetime.utcnow()
+        )
+        session.add(nuova)
+        session.commit()
+        session.refresh(nuova)
+        return nuova
+
+@app.put("/note/{nota_id}", response_model=NotaOut, tags=["Note"])
+def update_nota(nota_id: int, nota: NotaUpdate, admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        n = session.get(Nota, nota_id)
+        if not n:
+            raise HTTPException(404, "Nota non trovata")
+        if nota.testo is not None:
+            n.testo = nota.testo
+        if nota.oggetto_id is not None:
+            n.oggetto_id = nota.oggetto_id
+        if nota.attivita_id is not None:
+            n.attivita_id = nota.attivita_id
+        if nota.location_id is not None:
+            n.location_id = nota.location_id
+        if nota.autore_id is not None:
+            n.autore_id = nota.autore_id
+        if nota.data is not None:
+            n.data = nota.data
+        session.commit()
+        return n
+
+@app.delete("/note/{nota_id}", tags=["Note"])
+def delete_nota(nota_id: int, admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        n = session.get(Nota, nota_id)
+        if not n:
+            raise HTTPException(404, "Nota non trovata")
+        session.delete(n)
+        session.commit()
+        return {"detail": "Nota eliminata"}
 
 if __name__ == "__main__":
     import uvicorn
