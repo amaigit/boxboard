@@ -27,7 +27,7 @@ def add_utente(nome, ruolo, email, current_user_id=None):
                     utente.id,
                     f"Aggiunto utente {nome} ({email}) con ruolo {ruolo}",
                 )
-            return utente
+            return utente.id
     except IntegrityError as e:
         print(f"Errore di integrità (utente): {e}")
         return None
@@ -41,7 +41,7 @@ def add_location(nome, indirizzo, note):
             location = Location(nome=nome, indirizzo=indirizzo, note=note)
             session.add(location)
             session.commit()
-            return location
+            return location.id
     except IntegrityError as e:
         print(f"Errore di integrità (location): {e}")
         return None
@@ -62,7 +62,7 @@ def add_oggetto(nome, descrizione, stato, tipo, location_id, contenitore_id=None
             )
             session.add(oggetto)
             session.commit()
-            return oggetto
+            return oggetto.id
     except IntegrityError as e:
         print(f"Errore di integrità (oggetto): {e}")
         return None
@@ -76,7 +76,7 @@ def add_attivita(nome, descrizione):
             attivita = Attivita(nome=nome, descrizione=descrizione)
             session.add(attivita)
             session.commit()
-            return attivita
+            return attivita.id
     except IntegrityError as e:
         print(f"Errore di integrità (attivita): {e}")
         return None
@@ -95,7 +95,7 @@ def add_oggetto_attivita(oggetto_id, attivita_id, data_prevista, assegnato_a=Non
             )
             session.add(oa)
             session.commit()
-            return oa
+            return oa.id
     except IntegrityError as e:
         print(f"Errore di integrità (oggetto_attivita): {e}")
         return None
@@ -117,7 +117,7 @@ def add_nota(
             )
             session.add(nota)
             session.commit()
-            return nota
+            return nota.id
     except IntegrityError as e:
         print(f"Errore di integrità (nota): {e}")
         return None

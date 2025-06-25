@@ -28,20 +28,20 @@ def popola_mock():
         "Scatola di cartone 60x40x40cm",
         "da_rimuovere",
         "contenitore",
-        l1.id,
+        l1,
     )
     c2 = add_oggetto(
-        "Baule Antico", "Baule in legno d'epoca", "in_attesa", "contenitore", l2.id
+        "Baule Antico", "Baule in legno d'epoca", "in_attesa", "contenitore", l2
     )
     c3 = add_oggetto(
         "Cassetta Plastica",
         "Cassetta in plastica trasparente",
         "da_rimuovere",
         "contenitore",
-        l1.id,
+        l1,
     )
     c4 = add_oggetto(
-        "Valigia Vintage", "Valigia anni '70 in pelle", "venduto", "contenitore", l3.id
+        "Valigia Vintage", "Valigia anni '70 in pelle", "venduto", "contenitore", l3
     )
 
     # Oggetti semplici
@@ -50,38 +50,38 @@ def popola_mock():
         "Lampada vintage in ottone",
         "da_rimuovere",
         "oggetto",
-        l1.id,
-        c1.id,
+        l1,
+        c1,
     )
     o3 = add_oggetto(
-        "Orologio da Parete", "Orologio a pendolo", "in_attesa", "oggetto", l2.id, c2.id
+        "Orologio da Parete", "Orologio a pendolo", "in_attesa", "oggetto", l2, c2
     )
     o6 = add_oggetto(
-        "Poltrona", "Poltrona in pelle marrone", "da_rimuovere", "oggetto", l4.id
+        "Poltrona", "Poltrona in pelle marrone", "da_rimuovere", "oggetto", l4
     )
     o8 = add_oggetto(
-        "Specchio", "Specchio con cornice dorata", "in_attesa", "oggetto", l1.id, c3.id
+        "Specchio", "Specchio con cornice dorata", "in_attesa", "oggetto", l1, c3
     )
 
     # Assegnazioni attività
-    add_oggetto_attivita(o1.id, a1.id, "2024-07-01", u1.id)
-    add_oggetto_attivita(o1.id, a3.id, "2024-06-15", u2.id)
-    add_oggetto_attivita(o3.id, a2.id, "2024-07-10", u1.id)
-    add_oggetto_attivita(o6.id, a1.id, "2024-07-05", u3.id)
-    add_oggetto_attivita(o8.id, a4.id, "2024-06-20", u2.id)
+    add_oggetto_attivita(o1, a1, "2024-07-01", u1)
+    add_oggetto_attivita(o1, a3, "2024-06-15", u2)
+    add_oggetto_attivita(o3, a2, "2024-07-10", u1)
+    add_oggetto_attivita(o6, a1, "2024-07-05", u3)
+    add_oggetto_attivita(o8, a4, "2024-06-20", u2)
 
     # Note
     add_nota(
-        "Oggetto in buone condizioni, da valutare per vendita", o1.id, None, None, u1.id
+        "Oggetto in buone condizioni, da valutare per vendita", o1, None, None, u1
     )
-    add_nota("Trasporto programmato per venerdì mattina", None, a2.id, None, u2.id)
-    add_nota("Location molto umida, attenzione alla muffa", None, None, l3.id, u1.id)
+    add_nota("Trasporto programmato per venerdì mattina", None, a2, None, u2)
+    add_nota("Location molto umida, attenzione alla muffa", None, None, l3, u1)
     add_nota(
         "Attività completata in anticipo rispetto alla scadenza",
         None,
-        a1.id,
+        a1,
         None,
-        u3.id,
+        u3,
     )
 
     print("Dati di esempio inseriti!")
