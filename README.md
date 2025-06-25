@@ -247,3 +247,28 @@ CORS abilitato per tutte le origini (in sviluppo). In produzione si consiglia di
 
 - Test CRUD di base sulle API REST: `pytest test_api.py`
 - Richiede dipendenze: `pytest`, `httpx`
+
+---
+
+## 📚 Documentazione e risorse
+
+- [Piano di lavoro e avanzamento](./PIANO_LAVORO.md)
+- [Pianificazione modalità database (server/browser)](./PIANIFICAZIONE_MODALITA_DB.md)
+- [Test CRUD automatici (script)](./test_crud.py)
+- [Test automatici API REST (pytest)](./test_api.py)
+- [Script creazione DB MariaDB](./createdb-mariadb.sql)
+- [Script creazione DB PostgreSQL](./createdb-pg.sql)
+- [Script creazione DB SQLite](./createdb-sqlite.sql)
+
+---
+
+## Navigazione rapida
+
+- [Funzionalità principali](#-funzionalità-principali)
+- [Requisiti](#️-requisiti)
+- [Installazione](#-installazione)
+- [Struttura del progetto](#-struttura-del-progetto)
+- [Configurazione multi-database](#️-configurazione-multi-database)
+- [Test CRUD automatici](#-test-crud-automatici)
+- [API REST](#api-rest)
+- [Test automatici](#test-automatici)
