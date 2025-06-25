@@ -77,4 +77,63 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
 - Gestione autenticazione/permessi anche sulle API
 - Possibilità di filtrare, esportare, importare dati tramite API
 - Integrazione con altre app, automazioni, mobile, ecc.
-- Possibili strumenti: FastAPI, Flask, JWT per autenticazione 
+- Possibili strumenti: FastAPI, Flask, JWT per autenticazione
+
+---
+
+## Piano dettagliato sviluppo API REST
+
+### Obiettivo generale
+Esporre tutte le funzionalità del sistema tramite API RESTful, in modo che ogni operazione sia eseguibile sia dal frontend Streamlit che da client alternativi (web, mobile, automazioni, ecc.).
+
+### Stack scelto
+- **FastAPI** per API REST (veloce, moderna, OpenAPI integrato)
+- **Autenticazione JWT** (login, permessi, ruoli)
+- **Compatibilità con ORM SQLAlchemy già esistente**
+
+### Fasi di sviluppo
+
+#### Fase 1: Setup e autenticazione
+- [x] Creazione file `api.py` e struttura base FastAPI
+- [x] Endpoint di healthcheck (`/health`)
+- [ ] Endpoint di autenticazione (login, refresh token)
+- [ ] Gestione JWT e permessi per ruoli (Operatore, Coordinatore, Altro)
+- [ ] Documentazione OpenAPI automatica
+
+#### Fase 2: Utenti
+- [ ] Endpoint CRUD utenti (solo admin può creare/modificare/cancellare)
+- [ ] Endpoint per cambiare la propria password
+- [ ] Endpoint per ottenere il proprio profilo
+- [ ] Protezione permessi su ogni endpoint
+
+#### Fase 3: Location
+- [ ] Endpoint CRUD location
+- [ ] Permessi: tutti possono leggere, solo admin può modificare/cancellare
+
+#### Fase 4: Oggetti
+- [ ] Endpoint CRUD oggetti
+- [ ] Endpoint per ricerca/filtri avanzati
+- [ ] Permessi: tutti possono leggere, solo admin può modificare/cancellare
+
+#### Fase 5: Attività
+- [ ] Endpoint CRUD attività
+- [ ] Endpoint per assegnazione attività a oggetti/utenti
+- [ ] Permessi: tutti possono leggere, solo admin può modificare/cancellare
+
+#### Fase 6: Note
+- [ ] Endpoint CRUD note
+- [ ] Permessi: tutti possono leggere, solo admin può modificare/cancellare
+
+#### Fase 7: Log operazioni
+- [ ] Endpoint per consultare il log delle operazioni (solo admin)
+
+#### Fase 8: Extra e ottimizzazioni
+- [ ] Endpoint per esportazione/importazione dati (CSV/JSON)
+- [ ] Rate limiting, CORS, sicurezza
+- [ ] Test automatici delle API
+- [ ] Aggiornamento documentazione
+
+### Modalità di lavoro
+- Ogni fase/milestone sarà committata separatamente
+- La documentazione sarà aggiornata progressivamente
+- Possibilità di modificare/estendere il piano in base a nuove esigenze 
