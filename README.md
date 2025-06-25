@@ -1,5 +1,7 @@
 # BoxBoard
 
+> **Consiglio:** Per evitare conflitti e problemi di permessi, usa sempre un **ambiente virtuale Python** (`venv`) per installare le dipendenze, sviluppare e formattare il codice (es. con `black`).
+
 ![Boxboard Logo](https://github.com/amaigit/boxboard/raw/main/assets/logo.png)
 
 [![Build Status](https://github.com/amaigit/boxboard/actions/workflows/ci.yml/badge.svg)](https://github.com/amaigit/boxboard/actions)
@@ -38,25 +40,29 @@
    cd boxboard
    ```
 
-2. Crea un ambiente virtuale e attivalo:
-
+2. **Crea un ambiente virtuale e attivalo:**
    ```bash
    python3 -m venv venv
    source venv/bin/activate  # Su Windows: venv\Scripts\activate
    ```
 
-3. Installa le dipendenze:
-
+3. **Installa le dipendenze:**
    ```bash
    pip install -r requirements.txt
    ```
 
-4. Configura il database:
+4. **(Opzionale) Formatta il codice con black:**
+   ```bash
+   pip install black
+   black .
+   ```
+
+5. Configura il database:
 
    - Modifica il file `.env` secondo le tue esigenze (vedi sezione sopra).
    - Inizializza il database con lo script SQL appropriato **solo se vuoi popolare manualmente** (opzionale, normalmente SQLAlchemy crea le tabelle automaticamente).
 
-5. Avvia l'app:
+6. Avvia l'app:
 
    ```bash
    streamlit run app.py
