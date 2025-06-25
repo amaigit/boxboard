@@ -894,6 +894,72 @@ def insert_mock_data():
         st.error(f"Errore inserimento dati mock: {e}")
         return False
 
+# --- INSERIMENTO UTENTE ---
+def add_utente(nome, ruolo, email):
+    with get_session() as session:
+        utente = Utente(nome=nome, ruolo=ruolo, email=email)
+        session.add(utente)
+        session.commit()
+        return utente
+
+# --- INSERIMENTO LOCATION ---
+def add_location(nome, indirizzo, note):
+    with get_session() as session:
+        location = Location(nome=nome, indirizzo=indirizzo, note=note)
+        session.add(location)
+        session.commit()
+        return location
+
+# --- INSERIMENTO OGGETTO ---
+def add_oggetto(nome, descrizione, stato, tipo, location_id, contenitore_id=None):
+    with get_session() as session:
+        oggetto = Oggetto(
+            nome=nome,
+            descrizione=descrizione,
+            stato=stato,
+            tipo=tipo,
+            location_id=location_id,
+            contenitore_id=contenitore_id
+        )
+        session.add(oggetto)
+        session.commit()
+        return oggetto
+
+# --- INSERIMENTO ATTIVITA ---
+def add_attivita(nome, descrizione):
+    with get_session() as session:
+        attivita = Attivita(nome=nome, descrizione=descrizione)
+        session.add(attivita)
+        session.commit()
+        return attivita
+
+# --- INSERIMENTO OGGETTO_ATTIVITA ---
+def add_oggetto_attivita(oggetto_id, attivita_id, data_prevista, assegnato_a=None):
+    with get_session() as session:
+        oa = OggettoAttivita(
+            oggetto_id=oggetto_id,
+            attivita_id=attivita_id,
+            data_prevista=data_prevista,
+            assegnato_a=assegnato_a
+        )
+        session.add(oa)
+        session.commit()
+        return oa
+
+# --- INSERIMENTO NOTA ---
+def add_nota(testo, oggetto_id=None, attivita_id=None, location_id=None, autore_id=None):
+    with get_session() as session:
+        nota = Nota(
+            testo=testo,
+            oggetto_id=oggetto_id,
+            attivita_id=attivita_id,
+            location_id=location_id,
+            autore_id=autore_id
+        )
+        session.add(nota)
+        session.commit()
+        return nota
+
 # === MAIN APP ===
 
 def main():
