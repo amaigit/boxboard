@@ -1054,6 +1054,27 @@ login_method = st.sidebar.radio(
 )
 current_user = None
 
+# --- CALLBACK OAUTH2 ---
+def handle_google_callback():
+    if "code" in st.experimental_get_query_params():
+        code = st.experimental_get_query_params()["code"][0]
+        state = st.session_state.get("oauth_state")
+        oauth = OAuth2Session(
+            client_id=GOOGLE_CLIENT_ID,
+            client_secret=GOOGLE_CLIENT_SECRET,
+            scope=GOOGLE_SCOPE,
+            redirect_uri=REDIRECT_URI,
+            state=state,
+        )
+        token = oauth.fetch_token(
+            GOOGLE_TOKEN_URL,
+            code=code,
+            grant_type="authorization_code",
+            client_secret=GOOGLE_CLIENT_SECRET,
+        )
+        st.session_state["google_token"] = token
+        st.experimental_set_query_params()
+
 if login_method == "Google":
     handle_google_callback()
     user_google = login_google_authlib()
@@ -1212,28 +1233,6 @@ def login_google_authlib():
                         utente = nuovo
                 return utente
         return None
-
-
-# --- CALLBACK OAUTH2 ---
-def handle_google_callback():
-    if "code" in st.experimental_get_query_params():
-        code = st.experimental_get_query_params()["code"][0]
-        state = st.session_state.get("oauth_state")
-        oauth = OAuth2Session(
-            client_id=GOOGLE_CLIENT_ID,
-            client_secret=GOOGLE_CLIENT_SECRET,
-            scope=GOOGLE_SCOPE,
-            redirect_uri=REDIRECT_URI,
-            state=state,
-        )
-        token = oauth.fetch_token(
-            GOOGLE_TOKEN_URL,
-            code=code,
-            grant_type="authorization_code",
-            client_secret=GOOGLE_CLIENT_SECRET,
-        )
-        st.session_state["google_token"] = token
-        st.experimental_set_query_params()
 
 
 if __name__ == "__main__":
