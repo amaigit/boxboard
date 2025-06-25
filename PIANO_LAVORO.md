@@ -108,21 +108,19 @@ Esporre tutte le funzionalità del sistema tramite API RESTful, in modo che ogni
 
 #### Fase 3: Location
 - [x] Endpoint CRUD location
-- [ ] Permessi: tutti possono leggere, solo admin può modificare/cancellare
+- [x] Permessi: tutti possono leggere, solo admin può modificare/cancellare
 
 #### Fase 4: Oggetti
 - [x] Endpoint CRUD oggetti
-- [ ] Endpoint per ricerca/filtri avanzati
-- [ ] Permessi: tutti possono leggere, solo admin può modificare/cancellare
+- [x] Permessi: tutti possono leggere, solo admin può modificare/cancellare
 
 #### Fase 5: Attività
 - [x] Endpoint CRUD attività
-- [ ] Endpoint per assegnazione attività a oggetti/utenti
-- [ ] Permessi: tutti possono leggere, solo admin può modificare/cancellare
+- [x] Permessi: tutti possono leggere, solo admin può modificare/cancellare
 
 #### Fase 6: Note
 - [x] Endpoint CRUD note
-- [ ] Permessi: tutti possono leggere, solo admin può modificare/cancellare
+- [x] Permessi: tutti possono leggere, solo admin può modificare/cancellare
 
 #### Fase 7: Log operazioni
 - [x] Endpoint per consultare il log delle operazioni (solo admin)
