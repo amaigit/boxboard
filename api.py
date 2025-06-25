@@ -9,6 +9,7 @@ from db import get_session, Utente, Location, Oggetto, Attivita, Nota, LogOperaz
 import os
 import csv
 import io
+from fastapi.middleware.cors import CORSMiddleware
 
 # --- CONFIG ---
 SECRET_KEY = os.environ.get("API_SECRET_KEY", "supersecretkey")
@@ -17,6 +18,14 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 # --- FastAPI setup ---
 app = FastAPI(title="BoxBoard API", version="1.0.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # --- Password hashing ---
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
