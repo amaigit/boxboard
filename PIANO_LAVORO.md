@@ -135,3 +135,39 @@ Esporre tutte le funzionalità del sistema tramite API RESTful, in modo che ogni
 - Ogni fase/milestone sarà committata separatamente
 - La documentazione sarà aggiornata progressivamente
 - Possibilità di modificare/estendere il piano in base a nuove esigenze 
+
+---
+
+## Modalità database: server e browser
+
+Per la pianificazione dettagliata vedi anche [PIANIFICAZIONE_MODALITA_DB.md](./PIANIFICAZIONE_MODALITA_DB.md)
+
+### Obiettivo
+Consentire all'utente di scegliere, tramite interfaccia Streamlit, se:
+- Collegarsi a un database server-side (MariaDB, PostgreSQL, SQLite, anche remoto)
+- Gestire tutti i dati solo nel browser (modalità locale/privata, senza invio dati al server)
+
+### User Story principali
+- Come utente voglio scegliere la modalità di gestione dati (server o browser) dal pannello impostazioni.
+- Come utente voglio essere informato sui vantaggi/limiti di ciascuna modalità.
+- Come utente voglio poter esportare/importare i miei dati tra le due modalità.
+
+### Analisi tecnica
+- Modalità server: già implementata (SQLAlchemy, DB configurabile via .env o pannello).
+- Modalità browser: da implementare, richiede componente Streamlit custom (JS/IndexedDB o sql.js).
+- Sincronizzazione: solo tramite esportazione/importazione manuale.
+- Sicurezza: dati browser solo locali, nessun invio al server.
+
+### Roadmap di sviluppo
+1. Progettazione UX pannello di scelta modalità (Streamlit)
+2. Implementazione Streamlit Component per CRUD locale (IndexedDB/sql.js)
+3. Integrazione logica di scelta e fallback
+4. Esportazione/importazione dati tra modalità
+5. Test cross-browser e documentazione
+
+### Rischi e note
+- La modalità browser è ideale per privacy, demo, uso offline, ma non per collaborazione.
+- La scelta della modalità deve essere chiara e reversibile per l'utente.
+- L'implementazione richiede competenze sia Python/Streamlit che JavaScript/WebAssembly.
+
+--- 
