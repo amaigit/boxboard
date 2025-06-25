@@ -96,8 +96,8 @@ Esporre tutte le funzionalità del sistema tramite API RESTful, in modo che ogni
 #### Fase 1: Setup e autenticazione
 - [x] Creazione file `api.py` e struttura base FastAPI
 - [x] Endpoint di healthcheck (`/health`)
-- [ ] Endpoint di autenticazione (login, refresh token)
-- [ ] Gestione JWT e permessi per ruoli (Operatore, Coordinatore, Altro)
+- [x] Endpoint di autenticazione (login, refresh token)
+- [x] Gestione JWT e permessi per ruoli (Operatore, Coordinatore, Altro)
 - [ ] Documentazione OpenAPI automatica
 
 #### Fase 2: Utenti
