@@ -111,7 +111,7 @@ Esporre tutte le funzionalità del sistema tramite API RESTful, in modo che ogni
 - [ ] Permessi: tutti possono leggere, solo admin può modificare/cancellare
 
 #### Fase 4: Oggetti
-- [ ] Endpoint CRUD oggetti
+- [x] Endpoint CRUD oggetti
 - [ ] Endpoint per ricerca/filtri avanzati
 - [ ] Permessi: tutti possono leggere, solo admin può modificare/cancellare
 

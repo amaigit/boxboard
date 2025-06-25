@@ -5,7 +5,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from typing import Optional
-from db import get_session, Utente, Location
+from db import get_session, Utente, Location, Oggetto
 import os
 
 # --- CONFIG ---
@@ -78,6 +78,36 @@ class LocationUpdate(BaseModel):
     nome: Optional[str] = None
     indirizzo: Optional[str] = None
     note: Optional[str] = None
+
+class OggettoOut(BaseModel):
+    id: int
+    nome: str
+    descrizione: Optional[str] = None
+    stato: str
+    tipo: str
+    location_id: Optional[int] = None
+    contenitore_id: Optional[int] = None
+    data_rilevamento: datetime
+    class Config:
+        orm_mode = True
+
+class OggettoCreate(BaseModel):
+    nome: str
+    descrizione: Optional[str] = None
+    stato: Optional[str] = None
+    tipo: Optional[str] = None
+    location_id: Optional[int] = None
+    contenitore_id: Optional[int] = None
+    data_rilevamento: Optional[datetime] = None
+
+class OggettoUpdate(BaseModel):
+    nome: Optional[str] = None
+    descrizione: Optional[str] = None
+    stato: Optional[str] = None
+    tipo: Optional[str] = None
+    location_id: Optional[int] = None
+    contenitore_id: Optional[int] = None
+    data_rilevamento: Optional[datetime] = None
 
 # --- UTILITY JWT ---
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -278,6 +308,71 @@ def delete_location(location_id: int, admin: Utente = Depends(require_admin)):
         session.delete(loc)
         session.commit()
         return {"detail": "Location eliminata"}
+
+# --- ENDPOINT CRUD OGGETTI ---
+@app.get("/oggetti", response_model=list[OggettoOut], tags=["Oggetti"])
+def list_oggetti(user: Utente = Depends(get_current_user)):
+    with get_session() as session:
+        oggetti = session.query(Oggetto).all()
+        return oggetti
+
+@app.get("/oggetti/{oggetto_id}", response_model=OggettoOut, tags=["Oggetti"])
+def get_oggetto(oggetto_id: int, user: Utente = Depends(get_current_user)):
+    with get_session() as session:
+        obj = session.get(Oggetto, oggetto_id)
+        if not obj:
+            raise HTTPException(404, "Oggetto non trovato")
+        return obj
+
+@app.post("/oggetti", response_model=OggettoOut, tags=["Oggetti"])
+def create_oggetto(oggetto: OggettoCreate, admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        nuovo = Oggetto(
+            nome=oggetto.nome,
+            descrizione=oggetto.descrizione,
+            stato=oggetto.stato or 'da_rimuovere',
+            tipo=oggetto.tipo or 'oggetto',
+            location_id=oggetto.location_id,
+            contenitore_id=oggetto.contenitore_id,
+            data_rilevamento=oggetto.data_rilevamento or datetime.utcnow()
+        )
+        session.add(nuovo)
+        session.commit()
+        session.refresh(nuovo)
+        return nuovo
+
+@app.put("/oggetti/{oggetto_id}", response_model=OggettoOut, tags=["Oggetti"])
+def update_oggetto(oggetto_id: int, oggetto: OggettoUpdate, admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        obj = session.get(Oggetto, oggetto_id)
+        if not obj:
+            raise HTTPException(404, "Oggetto non trovato")
+        if oggetto.nome is not None:
+            obj.nome = oggetto.nome
+        if oggetto.descrizione is not None:
+            obj.descrizione = oggetto.descrizione
+        if oggetto.stato is not None:
+            obj.stato = oggetto.stato
+        if oggetto.tipo is not None:
+            obj.tipo = oggetto.tipo
+        if oggetto.location_id is not None:
+            obj.location_id = oggetto.location_id
+        if oggetto.contenitore_id is not None:
+            obj.contenitore_id = oggetto.contenitore_id
+        if oggetto.data_rilevamento is not None:
+            obj.data_rilevamento = oggetto.data_rilevamento
+        session.commit()
+        return obj
+
+@app.delete("/oggetti/{oggetto_id}", tags=["Oggetti"])
+def delete_oggetto(oggetto_id: int, admin: Utente = Depends(require_admin)):
+    with get_session() as session:
+        obj = session.get(Oggetto, oggetto_id)
+        if not obj:
+            raise HTTPException(404, "Oggetto non trovato")
+        session.delete(obj)
+        session.commit()
+        return {"detail": "Oggetto eliminato"}
 
 if __name__ == "__main__":
     import uvicorn
