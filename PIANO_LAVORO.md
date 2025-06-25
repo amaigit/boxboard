@@ -79,6 +79,11 @@ Questo documento elenca i passi da seguire per rendere il progetto coerente, man
 - Integrazione con altre app, automazioni, mobile, ecc.
 - Possibili strumenti: FastAPI, Flask, JWT per autenticazione
 
+### 3. Dashboard avanzata
+- [ ] Filtri e ricerca avanzata (sidebar/barra filtri, st.text_input, st.selectbox, st.multiselect, ricerca full-text)
+- [ ] Widget aggiuntivi e layout responsive (st.columns, st.expander, nuovi widget)
+- [ ] Commit e push su GitHub ad ogni step
+
 ---
 
 ## Piano dettagliato sviluppo API REST
@@ -223,5 +228,10 @@ Permettere all'utente di sincronizzare i dati tra modalità browser (IndexedDB/D
 - [x] UI CRUD interattiva (tabella dinamica, modali, filtri, ricerca)
 - [x] Notifiche avanzate (successo, errore, stato online/offline, storico operazioni)
 - [x] Commit e push su GitHub ad ogni step
+
+### 5. Dashboard avanzata
+- [ ] Filtri e ricerca avanzata (sidebar/barra filtri, st.text_input, st.selectbox, st.multiselect, ricerca full-text)
+- [ ] Widget aggiuntivi e layout responsive (st.columns, st.expander, nuovi widget)
+- [ ] Commit e push su GitHub ad ogni step
 
 --- 
