@@ -10,7 +10,7 @@ VERSIONE 1: MASSIMA LIBERTÀ
 
 Crea una applicazione web per la gestione di un inventario e delle attività di una squadra di lavoro, ispirata al sistema "Svuotacantine". L'applicazione deve permettere:
 - Autenticazione utenti (login classico e Google)
-- Gestione utenti, location, oggetti, attività, note
+- Gestione utenti, location, oggetti, contenitori, attività, note
 - Statistiche e log operazioni
 - Interfaccia moderna e semplice
 
@@ -20,7 +20,7 @@ Scegli liberamente tecnologie, linguaggi e modalità di persistenza dati. Puoi p
 VERSIONE 2: GUIDA MODERATA
 
 "Svuotacantine" è un gestionale per squadre che si occupano di svuotamento locali, traslochi, sgomberi o gestione magazzini. Permette di:
-- Gestire oggetti e location
+- Gestire oggetti, contenitori e location
 - Organizzare attività e assegnare oggetti
 - Gestire utenti e ruoli
 - Annotare note e visualizzare statistiche/log
@@ -39,7 +39,7 @@ Puoi usare qualsiasi stack moderno (es. Python+Streamlit, Django, Node.js+React,
 VERSIONE 3: ISTRUZIONI DETTAGLIATE
 
 "Svuotacantine" è un'applicazione gestionale per squadre di lavoro che si occupano di svuotamento locali, traslochi, sgomberi o gestione di magazzini. Le sue funzionalità principali sono:
-- Gestione di un inventario di oggetti, suddivisi per location
+- Gestione di un inventario di oggetti, suddivisi per contenitori, location, ...
 - Organizzazione di attività e assegnazione oggetti alle attività
 - Gestione utenti con ruoli (Operatore, Coordinatore)
 - Note, statistiche e log delle operazioni
@@ -55,5 +55,6 @@ Crea un'applicazione web con queste specifiche:
 - Statistiche: visualizzazione riepilogo (es. numero oggetti, attività, utenti)
 - Log operazioni: visualizzazione log delle azioni utenti (solo Coordinatore)
 - Navigazione: menu laterale, interfaccia moderna e responsive
+- I contenitori sono oggetti che contengono altri oggetti
 
 Tecnologie: puoi scegliere liberamente stack e database. L'app deve essere completa, usabile e pronta all'uso. Includi autenticazione, gestione dati, UI e tutte le funzionalità richieste. 
